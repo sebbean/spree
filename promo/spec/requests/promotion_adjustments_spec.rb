@@ -267,6 +267,23 @@ describe "Promotion Adjustments" do
       Spree::Promotion.last.should_not be_valid
     end
 
+    it "should pick the best promotion when two promotions exist for the same product" do
+      create_per_product_promotion("RoR Mug", 5.0)
+      add_to_cart "RoR Mug"
+      Spree::Order.last.total.to_f.should == 35.00
+
+      create_per_product_promotion("RoR Mug", 10.0)
+      Spree::Activator.active.event_name_starts_with('spree.cart.add').size.should == 2
+      visit '/cart'
+      fill_in 'order_line_items_attributes_0_quantity', :with => 0
+      click_button "Update"
+
+      add_to_cart "RoR Mug"
+
+      Spree::Order.last.total.to_f.should == 30.00
+    end
+
+
     # Regression test for #1416
     it "should allow an admin to create an automatic promo requiring a specific product to be bought" do
       create_per_product_promotion("RoR Mug", 5.0)
@@ -429,7 +446,7 @@ describe "Promotion Adjustments" do
       visit spree.admin_path
       click_link "Promotions"
       click_link "New Promotion"
-      fill_in "Name", :with => "Bundle"
+      fill_in "Name", :with => "Bundle d#{discount_amount}"
       select "Add to cart", :from => "Event"
       click_button "Create"
       page.should have_content("Editing Promotion")
@@ -482,7 +499,7 @@ describe "Promotion Adjustments" do
       visit spree.admin_path
       click_link "Promotions"
       click_link "New Promotion"
-      fill_in "Name", :with => "Bundle"
+      fill_in "Name", :with => "Bundle #{discount_amount}"
       select "Add to cart", :from => "Event"
       click_button "Create"
       page.should have_content("Editing Promotion")
