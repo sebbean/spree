@@ -260,13 +260,6 @@ describe "Promotion Adjustments" do
       Spree::Order.last.total.to_f.should == 76.00
     end
 
-    it "should not allow an admin to create two automatic promo for the same specific product" do
-      create_per_product_promotion("RoR Mug", 5.0)
-      create_per_product_promotion("RoR Mug", 10.0)
-
-      Spree::Promotion.last.should_not be_valid
-    end
-
     it "should pick the best promotion when two promotions exist for the same product" do
       create_per_product_promotion("RoR Mug", 5.0)
       add_to_cart "RoR Mug"
@@ -493,35 +486,6 @@ describe "Promotion Adjustments" do
       fill_in "card_number", :with => "4111111111111111"
       fill_in "card_code", :with => "123"
       click_button "Save and Continue"
-    end
-
-    def create_per_product_promotion product_name, discount_amount
-      visit spree.admin_path
-      click_link "Promotions"
-      click_link "New Promotion"
-      fill_in "Name", :with => "Bundle #{discount_amount}"
-      select "Add to cart", :from => "Event"
-      click_button "Create"
-      page.should have_content("Editing Promotion")
-
-      # add product_name to last promotion
-      promotion = Spree::Promotion.last
-      promotion.rules << Spree::Promotion::Rules::Product.new()
-      product = Spree::Product.find_by_name(product_name)
-      rule = promotion.rules.last
-      rule.products << product
-      if rule.save
-        puts "Created promotion: new price for #{product_name} is #{product.price - discount_amount} (was #{product.price})"
-      else
-        puts "Failed to create promotion: price for #{product_name} is still #{product.price}"
-      end
-
-      select "Create adjustment", :from => "Add action of type"
-      within('#action_fields') { click_button "Add" }
-      select "Flat Rate (per item)", :from => "Calculator"
-      within('#actions_container') { click_button "Update" }
-      within('.calculator-fields') { fill_in "Amount", :with => discount_amount.to_s }
-      within('#actions_container') { click_button "Update" }
     end
   end
 end
