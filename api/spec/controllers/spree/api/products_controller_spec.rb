@@ -69,15 +69,17 @@ module Spree
         product.set_property("spree", "rocks")
         api_get :show, :id => product.to_param
         json_response.should have_attributes(attributes)
-        json_response['variants'].first.should have_attributes([:name,
-                                                              :is_master,
-                                                              :count_on_hand,
-                                                              :price])
+        first_variant = json_response['variants'].first
+        first_variant.should have_attributes([:name,
+                                              :is_master,
+                                              :count_on_hand,
+                                              :price])
 
-        json_response["images"].first.should have_attributes([:attachment_file_name,
-                                                            :attachment_width,
-                                                            :attachment_height,
-                                                            :attachment_content_type])
+        image = json_response['variants'].first['images'].first
+        image.should have_attributes([:attachment_file_name,
+                                      :attachment_width,
+                                      :attachment_height,
+                                      :attachment_content_type])
 
         json_response["product_properties"].first.should have_attributes([:value,
                                                                          :product_id,
