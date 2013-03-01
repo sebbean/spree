@@ -90,7 +90,5 @@ module Spree
     def searcher_class=(sclass)
       @searcher_class = sclass
     end
-
   end
-
 end
