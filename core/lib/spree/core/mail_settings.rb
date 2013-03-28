@@ -1,6 +1,9 @@
 module Spree
   module Core
     module MailSettings
+      MAIL_AUTH = ['None', 'plain', 'login', 'cram_md5']
+      SECURE_CONNECTION_TYPES = ['None','SSL','TLS']
+
       # Override the Rails application mail settings based on preference.
       # This makes it possible to configure the mail settings
       # through an admin interface instead of requiring changes to the Rails envrionment file.
