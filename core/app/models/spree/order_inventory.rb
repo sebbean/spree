@@ -7,8 +7,6 @@ module Spree
     end
 
     def verify(line_item, shipment=nil)
-      return true unless order.completed?
-
       variant_units = inventory_units_for(line_item.variant)
 
       if variant_units.size < line_item.quantity
