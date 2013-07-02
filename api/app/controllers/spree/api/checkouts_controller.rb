@@ -1,7 +1,7 @@
 module Spree
   module Api
     class CheckoutsController < Spree::Api::BaseController
-      before_filter :load_order, :only => [:update, :next]
+      before_filter :load_order, :only => [:show, :update, :next]
       before_filter :associate_user, :only => :update
 
       include Spree::Core::ControllerHelpers::Auth
@@ -20,8 +20,15 @@ module Spree
         respond_with(@order, :default_template => 'spree/api/orders/could_not_transition', :status => 422)
       end
 
+      def show
+        respond_with(@order, :default_template => 'spree/api/orders/show', :status => 200)
+      end
+
       def update
+        order_params = object_params
+        line_items = order_params.delete("line_items_attributes")
         if @order.update_attributes(object_params)
+          @order.update_line_items(line_items)
           if current_api_user.has_spree_role?("admin") && user_id.present?
             @order.associate_user!(Spree.user_class.find(user_id))
           end
@@ -38,12 +45,13 @@ module Spree
         def object_params
           # For payment step, filter order parameters to produce the expected nested attributes for a single payment and its source, discarding attributes for payment methods other than the one selected
           # respond_to check is necessary due to issue described in #2910
+          object_params = nested_params
           if @order.has_checkout_step?("payment") && @order.payment?
-            if params[:payment_source].present? && source_params = params.delete(:payment_source)[params[:order][:payments_attributes].first[:payment_method_id].underscore]
-              params[:order][:payments_attributes].first[:source_attributes] = source_params
+            if object_params[:payment_source].present? && source_params = object_params.delete(:payment_source)[object_params[:order][:payments_attributes].first[:payment_method_id].underscore]
+              object_params[:order][:payments_attributes].first[:source_attributes] = source_params
             end
-            if params[:order].present? && params[:order][:payments_attributes]
-              params[:order][:payments_attributes].first[:amount] = @order.total
+            if object_params[:order].present? && object_params[:order][:payments_attributes]
+              object_params[:order][:payments_attributes].first[:amount] = @order.total
             end
           end
 
@@ -95,11 +103,6 @@ module Spree
         def before_address
           @order.bill_address ||= Address.default
           @order.ship_address ||= Address.default
-        end
-
-        def before_delivery
-          return if params[:order].present?
-          @order.create_proposed_shipments
         end
 
         def before_payment

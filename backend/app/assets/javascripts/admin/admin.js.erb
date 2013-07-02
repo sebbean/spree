@@ -155,7 +155,7 @@ $(document).ready(function(){
     var target = $(this).data("target");
     var new_table_row = $(target + ' tr:visible:last').clone();
     var new_id = new Date().getTime();
-    new_table_row.find("input").each(function () {
+    new_table_row.find("input, select").each(function () {
       var el = $(this);
       el.val("");
       el.attr("id", el.attr("id").replace(/\d+/, new_id))
@@ -197,7 +197,9 @@ $(document).ready(function(){
     el = $(this);
     el.prev("input[type=hidden]").val("1");
     el.closest(".fields").hide();
-    if (el.attr("href")) {
+    if (el.attr("href") == '#') {
+      el.parents("tr").fadeOut('hide');
+    }else if (el.attr("href")) {
       $.ajax({
         type: 'POST',
         url: el.attr("href"),

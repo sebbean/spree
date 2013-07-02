@@ -15,7 +15,7 @@ describe "Homepage" do
       end
 
       it "should have a link to overview" do
-        page.find_link("Overview")['/admin']
+        within(:xpath, ".//figure[@data-hook='logo-wrapper']") { page.find(:xpath, "a[@href='/admin']") }
       end
 
       it "should have a link to orders" do
@@ -63,7 +63,6 @@ describe "Homepage" do
 
     it 'should only display tabs fakedispatch has access to' do
       visit spree.admin_path
-      page.should have_link('Overview')
       page.should have_link('Orders')
       page.should_not have_link('Products')
       page.should_not have_link('Promotions')

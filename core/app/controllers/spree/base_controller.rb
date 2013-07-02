@@ -10,3 +10,5 @@ class Spree::BaseController < ApplicationController
 
   respond_to :html
 end
+
+require 'spree/i18n/initializer'

@@ -15,6 +15,7 @@ describe Spree::Shipment do
   end
 
   let(:charge) { create(:adjustment) }
+  let(:variant) { mock_model(Spree::Variant) }
 
   it 'is backordered if one if its inventory_units is backordered' do
     shipment.stub(inventory_units: [
@@ -227,8 +228,7 @@ describe Spree::Shipment do
     end
 
     it 'restocks the items' do
-      variant = mock_model(Spree::Variant)
-      shipment.stub(inventory_units: [mock_model(Spree::InventoryUnit, variant: variant)])
+      shipment.stub_chain(:inventory_units, includes: [mock_model(Spree::InventoryUnit, variant: variant)])
       shipment.stock_location = mock_model(Spree::StockLocation)
       shipment.stock_location.should_receive(:restock).with(variant, 1, shipment)
       shipment.after_cancel
@@ -248,35 +248,12 @@ describe Spree::Shipment do
     end
 
     it 'unstocks them items' do
-      variant = mock_model(Spree::Variant)
-      shipment.stub(inventory_units: [mock_model(Spree::InventoryUnit, variant: variant)])
+      shipment.stub_chain(:inventory_units, includes: [mock_model(Spree::InventoryUnit, variant: variant)])
       shipment.stock_location = mock_model(Spree::StockLocation)
       shipment.stock_location.should_receive(:unstock).with(variant, 1, shipment)
       shipment.after_resume
     end
-  end
 
-  context "#cancel" do
-    it 'cancels the shipment' do
-      shipment.stub(:ensure_correct_adjustment)
-      shipment.order.stub(:update!)
-
-      shipment.state = 'pending'
-      shipment.should_receive(:after_cancel)
-      shipment.cancel!
-      shipment.state.should eq 'canceled'
-    end
-
-    it 'restocks the items' do
-      variant = mock_model(Spree::Variant)
-      shipment.stub(:inventory_units => [mock_model(Spree::InventoryUnit, :variant => variant)])
-      shipment.stock_location = mock_model(Spree::StockLocation)
-      shipment.stock_location.should_receive(:restock).with(variant, 1, shipment)
-      shipment.after_cancel
-    end
-  end
-
-  context "#resume" do
     it 'will determine new state based on order' do
       shipment.stub(:ensure_correct_adjustment)
       shipment.order.stub(:update!)
@@ -287,14 +264,6 @@ describe Spree::Shipment do
       shipment.resume!
       # Shipment is pending because order is already paid
       shipment.state.should eq 'pending'
-    end
-
-    it 'unstocks them items' do
-      variant = mock_model(Spree::Variant)
-      shipment.stub(:inventory_units => [mock_model(Spree::InventoryUnit, :variant => variant)])
-      shipment.stock_location = mock_model(Spree::StockLocation)
-      shipment.stock_location.should_receive(:unstock).with(variant, 1, shipment)
-      shipment.after_resume
     end
   end
 
@@ -349,7 +318,15 @@ describe Spree::Shipment do
 
     it "should create adjustment when not present" do
       shipment.stub(:selected_shipping_rate_id => 1)
-      shipping_method.should_receive(:create_adjustment).with("UPS", order, shipment, true, "open")
+      shipping_method.should_receive(:create_adjustment).with(shipping_method.adjustment_label, order, shipment, true, "open")
+      shipment.send(:ensure_correct_adjustment)
+    end
+
+    # Regression test for #3138
+    it "should use the shipping method's adjustment label" do
+      shipment.stub(:selected_shipping_rate_id => 1)
+      shipping_method.stub(:adjustment_label => "Foobar")
+      shipping_method.should_receive(:create_adjustment).with("Foobar", order, shipment, true, "open")
       shipment.send(:ensure_correct_adjustment)
     end
 
@@ -357,7 +334,7 @@ describe Spree::Shipment do
       shipment.stub(selected_shipping_rate: mock_model(Spree::ShippingRate, cost: 10.00))
       shipment.stub(adjustment: mock_model(Spree::Adjustment, open?: true))
       shipment.adjustment.should_receive(:originator=).with(shipping_method)
-      shipment.adjustment.should_receive(:label=).with(shipping_method.name)
+      shipment.adjustment.should_receive(:label=).with(shipping_method.adjustment_label)
       shipment.adjustment.should_receive(:amount=).with(10.00)
       shipment.adjustment.should_receive(:save!)
       shipment.adjustment.should_receive(:reload)
@@ -368,7 +345,7 @@ describe Spree::Shipment do
       shipment.stub(selected_shipping_rate: mock_model(Spree::ShippingRate, cost: 10.00))
       shipment.stub(adjustment: mock_model(Spree::Adjustment, open?: false))
       shipment.adjustment.should_receive(:originator=).with(shipping_method)
-      shipment.adjustment.should_receive(:label=).with(shipping_method.name)
+      shipment.adjustment.should_receive(:label=).with(shipping_method.adjustment_label)
       shipment.adjustment.should_not_receive(:amount=).with(10.00)
       shipment.adjustment.should_receive(:save!)
       shipment.adjustment.should_receive(:reload)

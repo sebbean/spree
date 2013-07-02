@@ -10,8 +10,10 @@ module Spree
         end
 
         @products = @products.page(params[:page]).per(params[:per_page])
-
-        respond_with(@products)
+        last_updated_product = Spree::Product.order("updated_at ASC").last
+        if stale?(:etag => last_updated_product, :last_modified => last_updated_product.updated_at)
+          respond_with(@products)
+        end
       end
 
       def show
@@ -26,10 +28,14 @@ module Spree
         authorize! :create, Product
         params[:product][:available_on] ||= Time.now
         @product = Product.new(product_params)
-        if @product.save
-          respond_with(@product, :status => 201, :default_template => :show)
-        else
-          invalid_resource!(@product)
+        begin
+          if @product.save
+            respond_with(@product, :status => 201, :default_template => :show)
+          else
+            invalid_resource!(@product)
+          end
+        rescue ActiveRecord::RecordNotUnique
+          retry
         end
       end
 

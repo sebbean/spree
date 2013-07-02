@@ -8,8 +8,11 @@ module Spree
     has_many :shipments
     has_many :shipping_method_categories
     has_many :shipping_categories, through: :shipping_method_categories
+    has_many :shipping_rates
 
-    has_and_belongs_to_many :zones, join_table: "shipping_methods_zones"
+    has_and_belongs_to_many :zones, :join_table => 'spree_shipping_methods_zones',
+                                    :class_name => 'Spree::Zone',
+                                    :foreign_key => 'shipping_method_id'
 
     validates :name, presence: true
 
@@ -20,14 +23,12 @@ module Spree
     end
 
     def zone
-      raise "DEPRECATION WARNING: ShippingMethod#zone is no longer correct. Multiple zones need to be supported"
-      Rails.logger.error "DEPRECATION WARNING: ShippingMethod#zone is no longer correct. Multiple zones need to be supported"
+      ActiveSupport::Deprecation.warn("[SPREE] ShippingMethod#zone is no longer correct. Multiple zones need to be supported")
       zones.first
     end
 
     def zone=(zone)
-      p "DEPRECATION WARNING: ShippingMethod#zone is no longer correct. Multiple zones need to be supported"
-      Rails.logger.error "DEPRECATION WARNING: ShippingMethod#zone= is no longer correct. Multiple zones need to be supported"
+      ActiveSupport::Deprecation.warn("[SPREE] ShippingMethod#zone= is no longer correct. Multiple zones need to be supported")
       zones = zone
     end
 
@@ -43,7 +44,12 @@ module Spree
     end
 
     def self.calculators
-      spree_calculators.send(model_name_without_spree_namespace).select{|c| c.name.start_with?("Spree::Calculator::Shipping::")}
+      spree_calculators.send(model_name_without_spree_namespace).select{ |c| c < Spree::ShippingCalculator }
+    end
+
+    # Some shipping methods are only meant to be set via backend
+    def frontend?
+      self.display_on != "back_end"
     end
 
     private
@@ -51,6 +57,14 @@ module Spree
         if self.shipping_categories.empty?
           self.errors[:base] << "You need to select at least one shipping category"
         end
+      end
+
+      def self.on_backend_query
+        "#{table_name}.display_on != 'front_end' OR #{table_name}.display_on IS NULL"
+      end
+
+      def self.on_frontend_query
+        "#{table_name}.display_on != 'back_end' OR #{table_name}.display_on IS NULL"
       end
   end
 end

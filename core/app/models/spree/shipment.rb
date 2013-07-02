@@ -16,6 +16,7 @@ module Spree
     after_save :ensure_correct_adjustment, :update_order
 
     attr_accessor :special_instructions
+
     accepts_nested_attributes_for :address
     accepts_nested_attributes_for :inventory_units
 
@@ -32,7 +33,7 @@ module Spree
       event :ready do
         transition from: :pending, to: :ready, if: lambda { |shipment|
           # Fix for #2040
-          shipment.determine_state(shipment.order) == :ready
+          shipment.determine_state(shipment.order) == 'ready'
         }
       end
 
@@ -155,7 +156,7 @@ module Spree
     end
 
     def manifest
-      inventory_units.group_by(&:variant).map do |variant, units|
+      inventory_units.includes(:variant).group_by(&:variant).map do |variant, units|
         states = {}
         units.group_by(&:state).each { |state, iu| states[state] = iu.count }
         OpenStruct.new(variant: variant, quantity: units.length, states: states)
@@ -220,7 +221,7 @@ module Spree
 
     def to_package
       package = Stock::Package.new(stock_location, order)
-      inventory_units.each do |inventory_unit|
+      inventory_units.includes(:variant).each do |inventory_unit|
         package.add inventory_unit.variant, 1, inventory_unit.state
       end
       package
@@ -270,12 +271,12 @@ module Spree
       def ensure_correct_adjustment
         if adjustment
           adjustment.originator = shipping_method
-          adjustment.label = shipping_method.name
+          adjustment.label = shipping_method.adjustment_label
           adjustment.amount = selected_shipping_rate.cost if adjustment.open?
           adjustment.save!
           adjustment.reload
         elsif selected_shipping_rate_id
-          shipping_method.create_adjustment shipping_method.name, order, self, true, "open"
+          shipping_method.create_adjustment shipping_method.adjustment_label, order, self, true, "open"
           reload #ensure adjustment is present on later saves
         end
       end

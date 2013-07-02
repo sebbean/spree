@@ -5,13 +5,14 @@ module Spree
       # Dynamically defines our stores checkout steps to ensure we check authorization on each step.
       Order.checkout_steps.keys.each do |step|
         define_method step do
-          authorize! :update, @order
+          find_order
+          authorize! :update, @order, params[:token]
         end
       end
 
       def cancel
-        @order = Order.find_by_number!(params[:id])
-        authorize! :update, @order
+        find_order
+        authorize! :update, @order, params[:token]
         @order.cancel!
         render :show
       end
@@ -23,8 +24,7 @@ module Spree
       end
 
       def empty
-        @order = Order.find_by_number!(params[:id])
-        authorize! :update, @order
+        find_order
         @order.line_items.destroy_all
         @order.update!
         render :text => nil, :status => 200
@@ -37,15 +37,22 @@ module Spree
       end
 
       def show
-        @order = Order.find_by_number!(params[:id])
-        authorize! :read, @order
+        find_order
+        method = "before_#{@order.state}"
+        send(method) if respond_to?(method, true)
         respond_with(@order)
       end
 
       def update
-        @order = Order.find_by_number!(params[:id])
-        authorize! :update, @order
-        if @order.update_attributes(nested_params)
+        find_order
+        # Parsing line items through as an update_attributes call in the API will result in
+        # many line items for the same variant_id being created. We must be smarter about this,
+        # hence the use of the update_line_items method, defined within order_decorator.rb.
+        order_params = nested_params
+        line_items = order_params.delete("line_items_attributes")
+        if @order.update_attributes(order_params)
+          @order.update_line_items(line_items)
+          @order.line_items.reload
           @order.update!
           respond_with(@order, :default_template => :show)
         else
@@ -65,6 +72,15 @@ module Spree
         else
           render :could_not_transition, :status => 422
         end
+      end
+
+      def find_order
+        @order = Order.find_by_number!(params[:id])
+        authorize! :update, @order, params[:order_token]
+      end
+
+      def before_delivery
+        @order.create_proposed_shipments
       end
 
     end

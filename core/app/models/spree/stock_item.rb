@@ -7,8 +7,6 @@ module Spree
     validates_presence_of :stock_location, :variant
     validates_uniqueness_of :variant_id, scope: :stock_location_id
 
-    after_save :process_backorders
-
     delegate :weight, to: :variant
 
     def backordered_inventory_units
@@ -21,8 +19,9 @@ module Spree
 
     def adjust_count_on_hand(value)
       self.with_lock do
-        self.reload
-        self.update_attribute(:count_on_hand, self.count_on_hand + value)
+        self.count_on_hand = self.count_on_hand + value
+        process_backorders if in_stock?
+
         self.save!
       end
     end
@@ -37,19 +36,15 @@ module Spree
     end
 
     private
-    def count_on_hand=(value)
-      write_attribute(:count_on_hand, value)
-    end
-
-    def process_backorders
-      return unless changes['count_on_hand'] && changes['count_on_hand'].last.to_i > 0
-
-      backordered_units = backordered_inventory_units
-      while in_stock? && !backordered_units.empty?
-        inventory_unit = backordered_units.shift
-        inventory_unit.fill_backorder
-        self.adjust_count_on_hand(-1)
+      def count_on_hand=(value)
+        write_attribute(:count_on_hand, value)
       end
-    end
+
+      def process_backorders
+        backordered_inventory_units.each do |unit|
+          return unless in_stock?
+          unit.fill_backorder
+        end
+      end
   end
 end

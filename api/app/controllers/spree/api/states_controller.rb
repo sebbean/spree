@@ -1,6 +1,7 @@
 module Spree
   module Api
     class StatesController < Spree::Api::BaseController
+      skip_before_filter :set_expiry
 
       def index
         @states = scope.ransack(params[:q]).result.
@@ -10,7 +11,10 @@ module Spree
           @states = @states.page(params[:page]).per(params[:per_page])
         end
 
-        respond_with(@states)
+        state = @states.last
+        if stale?(state)
+          respond_with(@states)
+        end
       end
 
       def show

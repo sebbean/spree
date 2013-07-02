@@ -46,8 +46,10 @@ describe "Checkout" do
         fill_in_address
 
         click_button "Save and Continue"
-        page.should have_content(shipping_method.name)
         page.should_not have_content("undefined method `promotion'")
+
+        click_button "Save and Continue"
+        page.should have_content(shipping_method.adjustment_label)
       end
 
       # Regression test, no issue number
@@ -197,7 +199,7 @@ describe "Checkout" do
     select "United States of America", :from => "#{address}_country_id"
     select "Alabama", :from => "#{address}_state_id"
     fill_in "#{address}_zipcode", :with => "12345"
-    fill_in "#{address}_phone", :with => "(555) 5555-555"
+    fill_in "#{address}_phone", :with => "(555) 555-5555"
   end
 
   def add_mug_to_cart

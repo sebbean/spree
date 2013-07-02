@@ -51,6 +51,8 @@ describe "Order Details", js: true do
           click_icon :trash
         end
 
+        # Click "ok" on confirmation dialog
+        page.driver.browser.switch_to.alert.accept
         page.should_not have_content("spree t-shirt")
       end
 
@@ -73,7 +75,7 @@ describe "Order Details", js: true do
         select2 "Default", :from => "Shipping Method"
         click_icon :ok
 
-        page.should have_content("Default:")
+        page.should have_content("Default")
       end
 
       context "variant out of stock and not backorderable" do
@@ -163,7 +165,7 @@ describe "Order Details", js: true do
             # database_cleaner attempts to clean it
             sleep(1)
 
-            page.should have_content("Default:")
+            page.should have_content("Default")
           end
         end
       end
@@ -205,7 +207,7 @@ describe "Order Details", js: true do
       select2 "Default", :from => "Shipping Method"
       click_icon :ok
 
-      page.should have_content("Default:")
+      page.should have_content("Default")
     end
 
     it 'can ship' do

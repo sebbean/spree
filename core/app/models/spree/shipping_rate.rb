@@ -3,6 +3,9 @@ module Spree
     belongs_to :shipment, class_name: 'Spree::Shipment'
     belongs_to :shipping_method, class_name: 'Spree::ShippingMethod'
 
+    scope :frontend, -> { includes(:shipping_method).where(ShippingMethod.on_frontend_query) }
+    scope :backend, -> { includes(:shipping_method).where(ShippingMethod.on_backend_query) }
+
     delegate :order, :currency, to: :shipment
     delegate :name, to: :shipping_method
 
@@ -15,5 +18,7 @@ module Spree
 
       Spree::Money.new(price, { currency: currency })
     end
+
+    alias_method :display_cost, :display_price
   end
 end

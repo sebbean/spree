@@ -1,8 +1,9 @@
+<%= render :partial => "spree/admin/variants/split", :formats => :js %>
 <fieldset class="no-border-bottom">
   <legend align="center" class="stock-location" data-hook="stock-location">
     <span class="shipment-number"><%= shipment.number %></span>
     -
-    <span class="shipment-state"><%= shipment.state %></span>
+    <span class="shipment-state"><%= Spree.t("shipment_states.#{shipment.state}") %></span>
     <%= Spree.t(:package_from) %>
     <strong class="stock-location-name" data-hook="stock-location-name">'<%= shipment.stock_location.name %>'</strong>
     <% if shipment.ready? and can? :update, shipment %>
@@ -30,39 +31,8 @@
     <th class="orders-actions actions" data-hook="admin_order_form_line_items_header_actions"></th>
   </thead>
 
-  <tbody>
-    <% shipment.manifest.each do |item| %>
-      <% line_item = order.find_line_item_by_variant(item.variant) %>
-
-      <tr class="stock-item">
-        <td class="item-image"><%= mini_image(item.variant) %></td>
-        <td class="item-name">
-          <%= item.variant.product.name %><br><%= "(" + variant_options(item.variant) + ")" unless item.variant.option_values.empty? %>
-        </td>
-        <td class="item-price align-center"><%= line_item.single_money.to_html %></td>
-        <td class="item-qty-show align-center">
-            <% item.states.each do |state,count| %>
-              <%= count %> x <%= state.humanize.downcase %>
-            <% end %>
-        </td>
-        <% unless shipment.shipped? %>
-          <td class="item-qty-edit hidden">
-            <%= number_field_tag :quantity, item.quantity, :min => 0, :class => "line_item_quantity", :size => 5 %>
-          </td>
-        <% end %>
-        <td class="item-total align-center"><%= line_item.display_amount.to_html %></td>
-        <% unless shipment.shipped? %>
-          <td class="cart-item-delete actions" data-hook="cart_item_delete">
-            <% if can? :update, item %>
-              <%= link_to '', '#', :class => 'save-item icon_link icon-ok no-text with-tip', :data => {'shipment-number' => shipment.number, 'variant-id' => item.variant.id, :action => 'save'}, :title => Spree.t('actions.save'), :style => 'display: none' %>
-              <%= link_to '', '#', :class => 'cancel-item icon_link icon-cancel no-text with-tip', :data => {:action => 'cancel'}, :title => Spree.t('actions.cancel'), :style => 'display: none' %>
-              <%= link_to '', '#', :class => 'edit-item icon_link icon-edit no-text with-tip', :data => {:action => 'edit'}, :title => Spree.t('edit') %>
-              <%= link_to '', '#', :class => 'delete-item icon-trash no-text with-tip', :data => {'shipment-number' => shipment.number, 'variant-id' => item.variant.id, :action => 'remove'}, :title => Spree.t(:delete) %>
-            <% end %>
-          </td>
-        <% end %>
-      </tr>
-    <% end %>
+  <tbody data-shipment-number="<%= shipment.number %>" data-order-number="<%= order.number %>">
+    <%= render 'spree/admin/orders/shipment_manifest', order: order, shipment: shipment %>
 
     <% unless shipment.shipped? %>
       <tr class="edit-method hidden total">
@@ -70,7 +40,7 @@
           <div class="field alpha five columns">
             <%= label_tag 'selected_shipping_rate_id', Spree.t(:shipping_method) %>
             <%= select_tag :selected_shipping_rate_id,
-                  options_for_select(shipment.shipping_rates.map {|sr| ["#{sr.name} #{sr.display_price}", sr.id] }, shipment.selected_shipping_rate_id),
+                  options_for_select(shipment.shipping_rates.backend.map {|sr| ["#{sr.name} #{sr.display_price}", sr.id] }, shipment.selected_shipping_rate_id),
                   {:class => 'select2 fullwidth', :data => {'shipment-number' => shipment.number } } %>
           </div>
 
@@ -98,7 +68,7 @@
     <tr class="show-method total">
       <td colspan="4">
         <% if shipment.adjustment.present? %>
-          <strong><%= shipment.adjustment.label %>:</strong>
+          <strong><%= shipment.adjustment.label %>: <%= shipment.shipping_method.name %></strong>
         <% else %>
           <%= Spree.t(:cannot_set_shipping_method_without_address) %>
         <% end %>

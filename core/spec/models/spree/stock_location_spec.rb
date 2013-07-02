@@ -13,47 +13,65 @@ module Spree
     context "handling stock items" do
       let!(:variant) { create(:variant) }
 
-      context "propagate variants" do
+      context "given a variant" do
         subject { StockLocation.create(name: "testing", propagate_all_variants: false) }
-        let(:stock_item) { subject.propagate_variant(variant) }
 
-        it "creates a new stock item" do
-          expect {
-            subject.propagate_variant(variant)
-          }.to change{ StockItem.count }.by(1)
+        context "set up" do
+          it "creates stock item" do
+            subject.should_receive(:propagate_variant)
+            subject.set_up_stock_item(variant)
+          end
+
+          context "stock item exists" do
+            let!(:stock_item) { subject.propagate_variant(variant) }
+
+            it "returns existing stock item" do
+              subject.set_up_stock_item(variant).should == stock_item
+            end
+          end
         end
 
-        context "passes backorderable default config" do
+        context "propagate variants" do
+          let(:stock_item) { subject.propagate_variant(variant) }
+
+          it "creates a new stock item" do
+            expect {
+              subject.propagate_variant(variant)
+            }.to change{ StockItem.count }.by(1)
+          end
+
+          context "passes backorderable default config" do
+            context "true" do
+              before { subject.backorderable_default = true }
+              it { stock_item.backorderable.should be_true }
+            end
+
+            context "false" do
+              before { subject.backorderable_default = false }
+              it { stock_item.backorderable.should be_false }
+            end
+          end
+        end
+
+        context "propagate all variants" do
+          subject { StockLocation.new(name: "testing") }
+
           context "true" do
-            before { subject.backorderable_default = true }
-            it { stock_item.backorderable.should be_true }
+            before { subject.propagate_all_variants = true }
+
+            specify do
+              subject.should_receive(:propagate_variant).at_least(:once)
+              subject.save!
+            end
           end
 
           context "false" do
-            before { subject.backorderable_default = false }
-            it { stock_item.backorderable.should be_false }
-          end
-        end
-      end
+            before { subject.propagate_all_variants = false }
 
-      context "propagate all variants" do
-        subject { StockLocation.new(name: "testing") }
-
-        context "true" do
-          before { subject.propagate_all_variants = true }
-
-          specify do
-            subject.should_receive(:propagate_variant).at_least(:once)
-            subject.save!
-          end
-        end
-
-        context "false" do
-          before { subject.propagate_all_variants = false }
-
-          specify do
-            subject.should_not_receive(:propagate_variant)
-            subject.save!
+            specify do
+              subject.should_not_receive(:propagate_variant)
+              subject.save!
+            end
           end
         end
       end
@@ -69,8 +87,22 @@ module Spree
       stock_item.variant.should eq variant
     end
 
+    it 'returns nil when stock_item is not found for variant' do
+      stock_item = subject.stock_item(100)
+      stock_item.should be_nil
+    end
+
+    it 'creates a stock_item if not found for a variant' do
+      variant = create(:variant)
+      variant.stock_items.destroy_all
+      variant.save
+
+      stock_item = subject.stock_item_or_create(variant)
+      stock_item.variant.should eq variant
+    end
+
     it 'finds a count_on_hand for a variant' do
-      subject.count_on_hand(variant).should eq 10
+       subject.count_on_hand(variant).should eq 10
     end
 
     it 'finds determines if you a variant is backorderable' do
@@ -151,6 +183,19 @@ module Spree
           @stock_item.stub(count_on_hand: 0)
 
           on_hand, backordered = subject.fill_status(variant, 20)
+          on_hand.should eq 0
+          backordered.should eq 0
+        end
+      end
+
+      context 'without stock_items' do
+        subject { create(:stock_location) }
+        let(:variant) { create(:base_variant) }
+
+        it 'zero on_hand and backordered', focus: true do
+          subject
+          variant.stock_items.destroy_all
+          on_hand, backordered = subject.fill_status(variant, 1)
           on_hand.should eq 0
           backordered.should eq 0
         end

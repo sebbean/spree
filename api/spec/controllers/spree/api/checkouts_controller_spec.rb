@@ -63,14 +63,32 @@ module Spree
         json_response['state'].should == 'cart'
       end
 
-      it "should transition a recently created order from cart do address" do
+      it "should transition a recently created order from cart to address" do
         order.state.should eq "cart"
         order.email.should_not be_nil
         api_put :update, :id => order.to_param
         order.reload.state.should eq "address"
       end
 
+      it "can take line_items_attributes as a parameter" do
+        line_item = order.line_items.first
+        api_put :update, :id => order.to_param, :order_token => order.token,
+                         :order => { :line_items_attributes => { line_item.id => { :quantity => 1 } } }
+        response.status.should == 200
+        order.reload.state.should eq "address"
+      end
+
+      it "can take line_items as a parameter" do
+        line_item = order.line_items.first
+        api_put :update, :id => order.to_param, :order_token => order.token,
+                         :order => { :line_items => { line_item.id => { :quantity => 1 } } }
+        response.status.should == 200
+        order.reload.state.should eq "address"
+      end
+
       it "will return an error if the order cannot transition" do
+        order.bill_address = nil
+        order.save
         order.update_column(:state, "address")
         api_put :update, :id => order.to_param
         # Order has not transitioned
@@ -101,11 +119,18 @@ module Spree
       it "can update shipping method and transition from delivery to payment" do
         order.update_column(:state, "delivery")
         shipment = create(:shipment, :order => order)
-        shipping_rate = shipment.shipping_rates.first
+        shipment.refresh_rates
+        shipping_rate = shipment.shipping_rates.where(:selected => false).first
         api_put :update, :id => order.to_param, :order => { :shipments_attributes => { "0" => { :selected_shipping_rate_id => shipping_rate.id, :id => shipment.id } } }
-        json_response['shipments'][0]['shipping_method']['name'].should == @shipping_method.name
-        json_response['state'].should == 'payment'
         response.status.should == 200
+        # Find the correct shipment...
+        json_shipment = json_response['shipments'].detect { |s| s["id"] == shipment.id }
+        # Find the correct shipping rate for that shipment...
+        json_shipping_rate = json_shipment['shipping_rates'].detect { |sr| sr["id"] == shipping_rate.id }
+        # ... And finally ensure that it's selected
+        json_shipping_rate['selected'].should be_true
+        # Order should automatically transfer to payment because all criteria are met
+        json_response['state'].should == 'payment'
       end
 
       it "can update payment method and transition from payment to confirm" do

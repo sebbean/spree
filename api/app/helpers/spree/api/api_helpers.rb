@@ -12,7 +12,7 @@ module Spree
       end
 
       def product_attributes
-        [:id, :name, :description, :price, :available_on, :permalink, :meta_description, :meta_keywords, :taxon_ids]
+        [:id, :name, :description, :price, :display_price, :available_on, :permalink, :meta_description, :meta_keywords, :taxon_ids]
       end
 
       def product_property_attributes
@@ -20,7 +20,7 @@ module Spree
       end
 
       def variant_attributes
-        [:id, :name, :sku, :price, :weight, :height, :width, :depth, :is_master, :cost_price, :permalink]
+        [:id, :name, :sku, :price, :weight, :height, :width, :depth, :is_master, :cost_price, :permalink, :description]
       end
 
       def image_attributes

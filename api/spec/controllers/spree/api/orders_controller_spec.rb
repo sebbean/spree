@@ -9,7 +9,8 @@ module Spree
                         :state, :adjustment_total,
                         :user_id, :created_at, :updated_at,
                         :completed_at, :payment_total, :shipment_state,
-                        :payment_state, :email, :special_instructions] }
+                        :payment_state, :email, :special_instructions,
+                        :total_quantity, :display_item_total] }
 
 
     before do
@@ -43,6 +44,11 @@ module Spree
       assert_unauthorized!
     end
 
+    it "can view an order if the token is known" do
+      api_get :show, :id => order.to_param, :order_token => order.token
+      response.status.should == 200
+    end
+
     it "cannot cancel an order that doesn't belong to them" do
       order.update_attribute(:completed_at, Time.now)
       order.update_attribute(:shipment_state, "ready")
@@ -55,6 +61,15 @@ module Spree
       assert_unauthorized!
     end
 
+    let(:address_params) { { :country_id => Country.first.id, :state_id => State.first.id } }
+    let(:billing_address) { { :firstname => "Tiago", :lastname => "Motta", :address1 => "Av Paulista",
+                              :city => "Sao Paulo", :zipcode => "1234567", :phone => "12345678",
+                              :country_id => Country.first.id, :state_id => State.first.id} }
+    let(:shipping_address) { { :firstname => "Tiago", :lastname => "Motta", :address1 => "Av Paulista",
+                               :city => "Sao Paulo", :zipcode => "1234567", :phone => "12345678",
+                               :country_id => Country.first.id, :state_id => State.first.id} }
+    let!(:payment_method) { create(:payment_method) }
+
     it "can create an order" do
       variant = create(:variant)
       api_post :create, :order => { :line_items => { "0" => { :variant_id => variant.to_param, :quantity => 5 } } }
@@ -63,7 +78,27 @@ module Spree
       order.line_items.count.should == 1
       order.line_items.first.variant.should == variant
       order.line_items.first.quantity.should == 5
+      json_response["token"].should_not be_blank
       json_response["state"].should == "cart"
+    end
+
+    it "can create an order with parameters" do
+      variant = create(:variant)
+      api_post :create, :order => {
+        :email => 'test@spreecommerce.com',
+        :ship_address => shipping_address,
+        :bill_address => billing_address,
+        :line_items => {
+           "0" => { :variant_id => variant.to_param, :quantity => 5 } },
+      }
+
+      response.status.should == 201
+      order = Order.last
+
+      order.email.should eq 'test@spreecommerce.com'
+      order.ship_address.address1.should eq 'Av Paulista'
+      order.bill_address.address1.should eq 'Av Paulista'
+      order.line_items.count.should == 1
     end
 
     it "can create an order without any parameters" do
@@ -78,7 +113,9 @@ module Spree
         Order.any_instance.stub :user => current_api_user
         create(:payment_method)
         order.next # Switch from cart to address
-        order.ship_address.should be_nil
+        order.bill_address = nil
+        order.ship_address = nil
+        order.save
         order.state.should == "address"
       end
 
@@ -97,23 +134,28 @@ module Spree
                                  :country_id => Country.first.id, :state_id => State.first.id} }
       let!(:payment_method) { create(:payment_method) }
 
-      it "can add line items" do
-        api_put :update, :id => order.to_param, :order => { :line_items => [{:variant_id => create(:variant).id, :quantity => 2}] }
+      it "can update quantities of existing line items" do
+        variant = create(:variant)
+        line_item = order.line_items.create!(:variant_id => variant.id, :quantity => 1)
+
+        api_put :update, :id => order.to_param, :order => {
+          :line_items => {
+            line_item.id => { :quantity => 10 }
+          }
+        }
 
         response.status.should == 200
-        json_response['item_total'].to_f.should_not == order.item_total.to_f
+        json_response['line_items'].count.should == 1
+        json_response['line_items'].first['quantity'].should == 10
       end
 
       it "can add billing address" do
-        order.bill_address.should be_nil
-
         api_put :update, :id => order.to_param, :order => { :bill_address_attributes => billing_address }
 
         order.reload.bill_address.should_not be_nil
       end
 
       it "receives error message if trying to add billing address with errors" do
-        order.bill_address.should be_nil
         billing_address[:firstname] = ""
 
         api_put :update, :id => order.to_param, :order => { :bill_address_attributes => billing_address }
@@ -167,6 +209,50 @@ module Spree
           api_get :show, :id => order.to_param
 
           json_response['line_items'].first['variant'].should have_attributes([:product_id])
+        end
+
+        context "when in delivery" do
+          let!(:shipping_method) do
+            FactoryGirl.create(:shipping_method).tap do |shipping_method|
+              shipping_method.calculator.preferred_amount = 10
+              shipping_method.calculator.save
+            end
+          end
+
+          before do
+            order.ship_address = FactoryGirl.create(:address)
+            order.state = 'delivery'
+            order.save
+          end
+
+          it "returns available shipments for an order" do
+            api_get :show, :id => order.to_param
+            response.status.should == 200
+            json_response["shipments"].should_not be_empty
+            shipment = json_response["shipments"][0]
+            # Test for correct shipping method attributes
+            # Regression test for #3206
+            shipment["shipping_methods"].should_not be_nil
+            json_shipping_method = shipment["shipping_methods"][0]
+            json_shipping_method["id"].should == shipping_method.id
+            json_shipping_method["name"].should == shipping_method.name
+            json_shipping_method["zones"].should_not be_empty
+            json_shipping_method["shipping_categories"].should_not be_empty
+
+            # Test for correct shipping rates attributes
+            # Regression test for #3206
+            shipment["shipping_rates"].should_not be_nil
+            shipping_rate = shipment["shipping_rates"][0]
+            shipping_rate["name"].should == json_shipping_method["name"]
+            shipping_rate["cost"].should == "10.0"
+            shipping_rate["selected"].should be_true
+            shipping_rate["display_cost"].should == "$10.00"
+
+            shipment["stock_location_name"].should_not be_blank
+            manifest_item = shipment["manifest"][0]
+            manifest_item["quantity"].should == 1
+            manifest_item["variant"].should have_attributes([:id, :name, :sku, :price])
+          end
         end
       end
     end
