@@ -197,13 +197,32 @@ describe Spree::Order do
   end
 
   context "#process_payments!" do
+    let(:payment) { stub_model(Spree::Payment) }
+    before { order.stub :pending_payments => [payment], :total => 10 }
+
     it "should process the payments" do
-      order.stub(:total).and_return(10)
-      payment = stub_model(Spree::Payment)
-      payments = [payment]
-      order.stub(:payments).and_return(payments)
-      payments.first.should_receive(:process!)
-      order.process_payments!
+      payment.should_receive(:process!)
+      order.process_payments!.should be_true
+    end
+
+    it "should return false if no pending_payments available" do
+      order.stub :pending_payments => []
+      order.process_payments!.should be_false
+    end
+
+    context "when a payment raises a GatewayError" do
+      before { payment.should_receive(:process!).and_raise(Spree::Core::GatewayError) }
+
+      it "should return true when configured to allow checkout on gateway failures" do
+        Spree::Config.set :allow_checkout_on_gateway_error => true
+        order.process_payments!.should be_true
+      end
+
+      it "should return false when not configured to allow checkout on gateway failures" do
+        Spree::Config.set :allow_checkout_on_gateway_error => false
+        order.process_payments!.should be_false
+      end
+
     end
   end
 
@@ -311,40 +330,6 @@ describe Spree::Order do
     it "should return line_item that has insufficient stock on hand" do
       order.insufficient_stock_lines.size.should == 1
       order.insufficient_stock_lines.include?(line_item).should be_true
-    end
-
-  end
-
-  context "#remove_variant" do
-    let(:order) { Spree::Order.create }
-    let(:variant) { create(:variant) }
-
-    it 'should reduce line_item quantity if quantity is less the line_item quantity' do
-      line_item = order.contents.add(variant, 3)
-      order.remove_variant(variant, 1)
-
-      line_item.reload.quantity.should == 2
-    end
-
-    it 'should remove line_item if quantity matches line_item quantity' do
-      order.contents.add(variant, 1)
-      order.remove_variant(variant, 1)
-
-      order.reload.find_line_item_by_variant(variant).should be_nil
-    end
-
-    it "should update order totals" do
-      order.item_total.to_f.should == 0.00
-      order.total.to_f.should == 0.00
-
-      order.contents.add(variant, 2)
-
-      order.item_total.to_f.should == 39.98
-      order.total.to_f.should == 39.98
-
-      order.remove_variant(variant,1)
-      order.item_total.to_f.should == 19.99
-      order.total.to_f.should == 19.99
     end
 
   end
@@ -489,6 +474,22 @@ describe Spree::Order do
     end
   end
 
+  context "promotion adjustments" do
+    let(:originator) { double("Originator", id: 1) }
+    let(:adjustment) { double("Adjustment", originator: originator) }
+
+    before { order.stub_chain(:adjustments, :promotion, reload: [adjustment]) }
+
+    context "order has an adjustment from given promo action" do
+      it { expect(order.promotion_credit_exists? originator).to be_true }
+    end
+
+    context "order has no adjustment from given promo action" do
+      before { originator.stub(id: 12) }
+      it { expect(order.promotion_credit_exists? originator).to be_true }
+    end
+  end
+
   context "payment required?" do
     let(:order) { Spree::Order.new }
 
@@ -499,27 +500,6 @@ describe Spree::Order do
     context "total > zero" do
       before { order.stub(total: 1) }
       it { order.payment_required?.should be_true }
-    end
-  end
-
-  # Related to the fix for #2694
-  context "#has_unprocessed_payments?" do
-    let!(:persisted_order) { create(:order) }
-
-    context "with payments in the 'checkout' state" do
-      before do
-        create(:payment, :order => persisted_order, :state => 'checkout')
-      end
-
-      it "returns true" do
-        assert persisted_order.has_unprocessed_payments?
-      end
-    end
-
-    context "with no payments in the 'checkout' state" do
-      it "returns false" do
-        assert !persisted_order.has_unprocessed_payments?
-      end
     end
   end
 

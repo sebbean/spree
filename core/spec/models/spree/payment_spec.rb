@@ -41,6 +41,18 @@ describe Spree::Payment do
     payment.log_entries.stub(:create)
   end
 
+  context 'validations' do
+    it "returns useful error messages when source is invalid" do
+      payment.source = Spree::CreditCard.new
+      payment.should_not be_valid
+      cc_errors = payment.errors['Credit Card']
+      cc_errors.should include("Number can't be blank")
+      cc_errors.should include("Month is not a number")
+      cc_errors.should include("Year is not a number")
+      cc_errors.should include("Verification Value can't be blank")
+    end
+  end
+
   # Regression test for https://github.com/spree/spree/pull/2224
   context 'failure' do
 
@@ -543,12 +555,10 @@ describe Spree::Payment do
 
   context "#build_source" do
     it "should build the payment's source" do
-      params = {
-        :amount         => 100,
-        :payment_method => gateway,
+      params = { :amount => 100, :payment_method => gateway,
         :source_attributes => {
-          :year  => "2012",
-          :month =>"1",
+          :year => 1.month.from_now.year,
+          :month =>1.month.from_now.month,
           :number => '1234567890123',
           :verification_value => '123'
         }
@@ -557,25 +567,6 @@ describe Spree::Payment do
       payment = Spree::Payment.new(params)
       payment.should be_valid
       payment.source.should_not be_nil
-    end
-
-    context "with the params hash ordered differently" do
-      it "should build the payment's source" do
-        params = {
-          :amount => 100,
-          :payment_method => gateway,
-          :source_attributes => {
-            :year => "2012",
-            :month =>"1",
-            :number => '1234567890123',
-            :verification_value => '123'
-          }
-        }
-
-        payment = Spree::Payment.new(params)
-        payment.should be_valid
-        payment.source.should_not be_nil
-      end
     end
 
     it "errors when payment source not valid" do

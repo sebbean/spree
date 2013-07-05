@@ -5,7 +5,7 @@ module Spree
     render_views
 
     let!(:order) { create(:order) }
-    let(:attributes) { [:number, :item_total, :total,
+    let(:attributes) { [:number, :item_total, :display_total, :total,
                         :state, :adjustment_total,
                         :user_id, :created_at, :updated_at,
                         :completed_at, :payment_total, :shipment_state,
@@ -111,6 +111,7 @@ module Spree
     context "working with an order" do
       before do
         Order.any_instance.stub :user => current_api_user
+        order.line_items << FactoryGirl.create(:line_item)
         create(:payment_method)
         order.next # Switch from cart to address
         order.bill_address = nil
@@ -166,7 +167,6 @@ module Spree
       end
 
       it "can add shipping address" do
-        pending "need to figure out how to get shipping methods for an order"
         order.ship_address.should be_nil
 
         api_put :update, :id => order.to_param, :order => { :ship_address_attributes => shipping_address }

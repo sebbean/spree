@@ -22,12 +22,8 @@ module Spree
 
       it "correctly calls the transition callback" do
         order.did_transition.should be_nil
-        params = {
-          # The submit button. Checked, and if it's present will do the transition
-          :checkout => "checkout",
-          :order => { :email => "foo@bar.com" }
-        }
-        spree_put :update, params, { :order_id => 1}
+        order.line_items << FactoryGirl.create(:line_item)
+        spree_put :update, { :checkout => "checkout" }, { :order_id => 1}
         order.did_transition.should be_true
       end
     end

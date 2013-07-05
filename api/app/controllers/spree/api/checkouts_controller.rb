@@ -6,6 +6,8 @@ module Spree
 
       include Spree::Core::ControllerHelpers::Auth
       include Spree::Core::ControllerHelpers::Order
+      # This before_filter comes from Spree::Core::ControllerHelpers::Order
+      skip_before_filter :set_current_order
 
       def create
         authorize! :create, Order
@@ -14,6 +16,7 @@ module Spree
       end
 
       def next
+        authorize! :update, @order, params[:order_token]
         @order.next!
         respond_with(@order, :default_template => 'spree/api/orders/show', :status => 200)
       rescue StateMachine::InvalidTransition
@@ -25,6 +28,7 @@ module Spree
       end
 
       def update
+        authorize! :update, @order, params[:order_token]
         order_params = object_params
         line_items = order_params.delete("line_items_attributes")
         if @order.update_attributes(object_params)
@@ -47,11 +51,14 @@ module Spree
           # respond_to check is necessary due to issue described in #2910
           object_params = nested_params
           if @order.has_checkout_step?("payment") && @order.payment?
-            if object_params[:payment_source].present? && source_params = object_params.delete(:payment_source)[object_params[:order][:payments_attributes].first[:payment_method_id].underscore]
-              object_params[:order][:payments_attributes].first[:source_attributes] = source_params
+            if object_params[:payments_attributes].is_a?(Hash)
+              object_params[:payments_attributes] = [object_params[:payments_attributes]]
             end
-            if object_params[:order].present? && object_params[:order][:payments_attributes]
-              object_params[:order][:payments_attributes].first[:amount] = @order.total
+            if object_params[:payment_source].present? && source_params = object_params.delete(:payment_source)[object_params[:payments_attributes].first[:payment_method_id]]
+              object_params[:payments_attributes].first[:source_attributes] = source_params
+            end
+            if object_params[:payments_attributes]
+              object_params[:payments_attributes].first[:amount] = @order.total.to_s
             end
           end
 

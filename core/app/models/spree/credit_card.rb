@@ -10,6 +10,7 @@ module Spree
     validates :month, :year, numericality: { only_integer: true }
     validates :number, presence: true, unless: :has_payment_profile?, on: :create
     validates :verification_value, presence: true, unless: :has_payment_profile?, on: :create
+    validate :expiry_not_in_the_past
 
     scope :with_payment_profile, -> { where('gateway_customer_profile_id IS NOT NULL') }
 
@@ -83,6 +84,17 @@ module Spree
     def spree_cc_type
       return 'visa' if Rails.env.development?
       cc_type
+    end
+
+    private
+
+    def expiry_not_in_the_past
+      if year && month
+        time = "#{year}-#{month}-1".to_time
+        if time < Time.zone.now.beginning_of_month
+          errors.add("card", "has expired")
+        end
+      end
     end
   end
 end

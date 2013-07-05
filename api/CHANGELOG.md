@@ -47,3 +47,19 @@
 * The structure of shipments data in the API has changed. Shipments can now have many shipping methods, shipping rates (which in turn have many zones and shipping categories), as well as a new key called "manifest" which returns the list of items contained within just this shipment for the order.
 
     *Ryan Bigg*
+
+* Address responses now contain a `full_name` attribute.
+
+    *Ryan Bigg*
+
+* Shipments responses now contain a `selected_shipping_rate` key, so that you don't have to sort through the list of `shipping_rates` to get the selected one.
+
+    *Ryan Bigg*
+
+* Checkouts API now correctly processes incoming payment data during the payment step.
+
+    *Ryan Bigg*
+
+* Fix issue where `set_current_order` before filter would be called when CheckoutsController actions were run, causing the order object to be deleted. #3306
+
+*Ryan Bigg*
