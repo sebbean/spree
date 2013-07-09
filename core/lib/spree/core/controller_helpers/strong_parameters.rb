@@ -18,7 +18,7 @@ module Spree
         end
 
         def permitted_payment_attributes
-          [:payment_method_id, :source_attributes => permitted_source_attributes]
+          [:amount, :payment_method_id, :source_attributes => permitted_source_attributes]
         end
 
         def permitted_checkout_attributes
@@ -42,10 +42,6 @@ module Spree
 
         def permitted_option_value_attributes
           [:name, :presentation]
-        end
-
-        def permitted_payment_attributes
-          [:amount, :payment_method_id, :source_attributes]
         end
 
         def permitted_product_properties_attributes

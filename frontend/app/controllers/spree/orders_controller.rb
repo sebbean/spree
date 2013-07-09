@@ -86,7 +86,11 @@ module Spree
     private
 
       def order_params
-        params[:order].permit(*permitted_order_attributes)
+        if params[:order]
+          params[:order].permit(*permitted_order_attributes)
+        else
+          {}
+        end
       end
 
       def after_update_attributes
