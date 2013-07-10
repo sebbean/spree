@@ -32,12 +32,13 @@ Gem::Specification.new do |s|
   s.add_dependency 'paperclip', '~> 3.4.1'
   s.add_dependency 'aws-sdk', '~> 1.3.4'
   # s.add_dependency 'ransack', '0.7.2'
-  s.add_dependency 'activemerchant', '~> 1.31'
+  s.add_dependency 'activemerchant', '~> 1.34'
   s.add_dependency 'deface', '>= 1.0.0.rc3'
   s.add_dependency 'stringex', '~> 1.5.1'
   s.add_dependency 'cancan', '1.6.8'
   s.add_dependency 'truncate_html', '0.9.2'
   s.add_dependency 'money', '5.1.1'
+  s.add_dependency 'paranoia', '~> 1.3'
 
   # For checking for alerts
   s.add_dependency 'httparty', '~> 0.11'
