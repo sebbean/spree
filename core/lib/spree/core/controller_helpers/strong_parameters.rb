@@ -25,7 +25,8 @@ module Spree
           [:email, :use_billing, :shipping_method_id, :coupon_code,
            :bill_address_attributes => permitted_address_attributes,
            :ship_address_attributes => permitted_address_attributes,
-           :payments_attributes => permitted_payment_attributes]
+           :payments_attributes => permitted_payment_attributes,
+           :shipments_attributes => permitted_shipment_attributes]
         end
 
         def permitted_image_attributes
@@ -65,7 +66,7 @@ module Spree
         end
 
         def permitted_shipment_attributes
-          [:order, :special_instructions, :stock_location_id,
+          [:order, :special_instructions, :stock_location_id, :id,
            :tracking, :address, :inventory_units, :selected_shipping_rate_id]
         end
 
