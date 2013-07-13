@@ -45,7 +45,8 @@ module Spree
     has_many :variants_including_master,
       -> { where(deleted_at: nil) },
       class_name: 'Spree::Variant',
-      dependent: :destroy
+      dependent: :destroy,
+      order: "#{::Spree::Variant.quoted_table_name}.position ASC"
 
 
     has_many :prices, -> { order('spree_variants.position, spree_variants.id, currency') }, through: :variants
