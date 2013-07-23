@@ -43,8 +43,13 @@ module Spree
 
     # Shows the current incomplete order from the session
     def edit
-      @order = current_order(true)
-      associate_user
+      @order = Spree::Order.where(:id => session[:order_id]).
+        includes(:adjustments, :line_items => { :variant => [:product, :images, { :option_values => :option_type } ]}).
+        first
+
+      if stale?(:etag => @order, :last_modified => @order.updated_at)
+        respond_with(@order)
+      end
     end
 
     # Adds a new item to the order (creating a new order if none already exists)
