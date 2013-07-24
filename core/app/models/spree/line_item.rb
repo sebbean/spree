@@ -1,5 +1,8 @@
+require 'spree/inventory_worker'
+
 module Spree
   class LineItem < ActiveRecord::Base
+    acts_as_paranoid
     before_validation :adjust_quantity
     belongs_to :order, class_name: "Spree::Order", :touch => true
     belongs_to :variant, class_name: "Spree::Variant"
@@ -20,8 +23,7 @@ module Spree
 
     attr_accessible :quantity, :variant_id
 
-    before_save :update_inventory
-
+    after_save :update_inventory
     after_save :update_order
     after_destroy :update_order
 
@@ -79,13 +81,14 @@ module Spree
 
     private
       def update_inventory
-        Spree::OrderInventory.new(self.order).verify(self, target_shipment)
+        Spree::InventoryWorker.perform_async(self.order_id, self.id, target_shipment.try(:id))
+        # Spree::OrderInventory.new(self.order).verify(self, target_shipment)
       end
 
       def update_order
         # update the order totals, etc.
-        order.create_tax_charge!
-        order.update!
+        # order.create_tax_charge!
+        # order.update!
       end
   end
 end

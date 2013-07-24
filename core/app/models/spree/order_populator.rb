@@ -44,7 +44,7 @@ module Spree
         return false
       end
 
-      variant = Spree::Variant.find(variant_id)
+      variant = Spree::Variant.includes(:prices).find(variant_id)
       if quantity > 0
         if check_stock_levels(variant, quantity)
           @order.contents.add(variant, quantity, currency)
