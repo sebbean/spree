@@ -57,6 +57,7 @@ RSpec.configure do |config|
     else
       DatabaseCleaner.strategy = :transaction
     end
+    puts "Open transactions: #{ActiveRecord::Base.connection.open_transactions}"
     DatabaseCleaner.start
     reset_spree_preferences
   end
