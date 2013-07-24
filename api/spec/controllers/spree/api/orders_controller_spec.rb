@@ -76,6 +76,11 @@ module Spree
                                :city => "Sao Paulo", :zipcode => "1234567", :phone => "12345678",
                                :country_id => Country.first.id, :state_id => State.first.id} }
     let!(:payment_method) { create(:payment_method) }
+    let(:current_api_user) do
+      user = Spree.user_class.new(:email => "spree@example.com")
+      user.generate_spree_api_key!
+      user
+    end
 
     it "can create an order" do
       variant = create(:variant)
@@ -87,29 +92,46 @@ module Spree
       order.line_items.first.quantity.should == 5
       json_response["token"].should_not be_blank
       json_response["state"].should == "cart"
+      order.user.should == current_api_user
+      order.email.should == current_api_user.email
+      json_response["user_id"].should == current_api_user.id
     end
 
-    it "can create an order with parameters" do
+    # Regression test for #3404
+    it "can specify additional parameters for a line item" do
       variant = create(:variant)
-      api_post :create, :order => {
-        :email => 'test@spreecommerce.com',
-        :ship_address => shipping_address,
-        :bill_address => billing_address,
+      Order.should_receive(:create!).and_return(order = Spree::Order.new)
+      order.stub(:associate_user!)
+      order.stub_chain(:contents, :add).and_return(line_item = double('LineItem'))
+      line_item.should_receive(:update_attributes).with("special" => true)
+      api_post :create, :order => { 
         :line_items => {
-           "0" => { :variant_id => variant.to_param, :quantity => 5 } },
+          "0" => {
+            :variant_id => variant.to_param, :quantity => 5, :special => true
+          }
+        }
       }
-
       response.status.should == 201
-      order = Order.last
+    end
 
-      order.email.should eq 'test@spreecommerce.com'
-      order.ship_address.address1.should eq 'Av Paulista'
-      order.bill_address.address1.should eq 'Av Paulista'
-      order.line_items.count.should == 1
+    # Regression test for #3404
+    it "does not update line item needlessly" do
+      variant = create(:variant)
+      Order.should_receive(:create!).and_return(order = Spree::Order.new)
+      order.stub(:associate_user!)
+      order.stub_chain(:contents, :add).and_return(line_item = double('LineItem'))
+      line_item.should_not_receive(:update_attributes)
+      api_post :create, :order => { 
+        :line_items => {
+          "0" => {
+            :variant_id => variant.to_param, :quantity => 5
+          }
+        }
+      }
     end
 
     it "can create an order without any parameters" do
-      lambda { api_post :create }.should_not raise_error(NoMethodError)
+      lambda { api_post :create }.should_not raise_error
       response.status.should == 201
       order = Order.last
       json_response["state"].should == "cart"

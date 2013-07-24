@@ -29,20 +29,6 @@ module Spree
         json_response['number'].should be_present
         response.status.should == 201
       end
-
-      it "should not have a user by default" do
-        api_post :create
-
-        json_response['user_id'].should_not be_present
-        response.status.should == 201
-      end
-
-      it "should not have an email by default" do
-        api_post :create
-
-        json_response['email'].should_not be_present
-        response.status.should == 201
-      end
     end
 
     context "PUT 'update'" do
@@ -84,15 +70,6 @@ module Spree
                          :order => { :line_items => { line_item.id => { :quantity => 1 } } }
         response.status.should == 200
         order.reload.state.should eq "address"
-      end
-
-      it "will return an error if the order cannot transition" do
-        order.bill_address = nil
-        order.save
-        order.update_column(:state, "address")
-        api_put :update, :id => order.to_param, :order_token => order.token
-        # Order has not transitioned
-        response.status.should == 422
       end
 
       it "can update addresses and transition from address to delivery" do

@@ -19,8 +19,8 @@ describe Spree::CreditCard do
     @order = create(:order)
     @payment = Spree::Payment.create(:amount => 100, :order => @order)
 
-    @success_response = mock('gateway_response', success?: true, authorization: '123', avs_result: { 'code' => 'avs-code' })
-    @fail_response = mock('gateway_response', success?: false)
+    @success_response = double('gateway_response', success?: true, authorization: '123', avs_result: { 'code' => 'avs-code' })
+    @fail_response = double('gateway_response', success?: false)
 
     @payment_gateway = mock_model(Spree::PaymentMethod,
       payment_profiles_supported?: true,
@@ -88,7 +88,7 @@ describe Spree::CreditCard do
       credit_card.month = 1.month.ago.month
       credit_card.year = 1.month.ago.year
       credit_card.should_not be_valid
-      credit_card.errors[:card].should == ["has expired"]
+      credit_card.errors[:base].should == ["Card has expired"]
     end
 
     it "does not run expiration in the past validation if month is not set" do

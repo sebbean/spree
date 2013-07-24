@@ -38,9 +38,9 @@ The fastest way to get started is by using the spree command line tool
 available in the spree gem which will add Spree to an existing Rails application.
 
 ```shell
-gem install rails -v 3.2.13
+gem install rails -v 3.2.14
 gem install spree
-rails _3.2.13_ new my_store
+rails _3.2.14_ new my_store
 spree install my_store
 ```
 
@@ -131,6 +131,7 @@ rails g spree:install --migrate=false --sample=false --seed=false
 You can always perform the steps later by using these commands.
 
 ```shell
+bundle exec rake railties:install:migrations
 bundle exec rake db:migrate
 bundle exec rake db:seed
 bundle exec rake spree_sample:load

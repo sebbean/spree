@@ -101,37 +101,32 @@ module Spree
           payment.state.should == "pending"
         end
 
-        context "authorization fails" do
-          before do
-            fake_response = stub(:success? => false, :to_s => "Could not authorize card")
-            Spree::Gateway::Bogus.any_instance.should_receive(:authorize).and_return(fake_response)
-          end 
-
-          it "returns a 422 status" do
-            api_put :authorize, :id => payment.to_param
-            response.status.should == 422
-            json_response["error"].should == "There was a problem with the payment gateway: Could not authorize card"
-          end
-
-          pending "Investigate why a payment.reload after the request raises 'stack level too deep'" 
+        it "returns a 422 status when authorization fails" do
+          fake_response = double(:success? => false, :to_s => "Could not authorize card")
+          Spree::Gateway::Bogus.any_instance.should_receive(:authorize).and_return(fake_response)
+          api_put :authorize, :id => payment.to_param
+          response.status.should == 422
+          json_response["error"].should == "There was a problem with the payment gateway: Could not authorize card"
+          payment.reload
+          payment.state.should == "failed"
         end
 
         it "can capture" do
           api_put :capture, :id => payment.to_param
           response.status.should == 200
+          payment.reload
+          payment.state.should == "completed"
         end
 
-        context "capturing fails" do
-          before do
-            fake_response = stub(:success? => false, :to_s => "Insufficient funds")
-            Spree::Gateway::Bogus.any_instance.should_receive(:capture).and_return(fake_response)
-          end
+        it "returns a 422 status when purchasing fails" do
+          fake_response = double(:success? => false, :to_s => "Insufficient funds")
+          Spree::Gateway::Bogus.any_instance.should_receive(:capture).and_return(fake_response)
+          api_put :capture, :id => payment.to_param
+          response.status.should == 422
+          json_response["error"].should == "There was a problem with the payment gateway: Insufficient funds"
 
-          it "returns a 422 status on capture" do
-            api_put :capture, :id => payment.to_param
-            response.status.should == 422
-            json_response["error"].should == "There was a problem with the payment gateway: Insufficient funds"
-          end
+          payment.reload
+          payment.state.should == "failed"
         end
 
         it "can purchase" do
@@ -141,17 +136,15 @@ module Spree
           payment.state.should == "completed"
         end
 
-        context "purchasing fails" do
-          before do
-            fake_response = stub(:success? => false, :to_s => "Insufficient funds")
-            Spree::Gateway::Bogus.any_instance.should_receive(:purchase).and_return(fake_response)
-          end
+        it "returns a 422 status when purchasing fails" do
+          fake_response = double(:success? => false, :to_s => "Insufficient funds")
+          Spree::Gateway::Bogus.any_instance.should_receive(:purchase).and_return(fake_response)
+          api_put :purchase, :id => payment.to_param
+          response.status.should == 422
+          json_response["error"].should == "There was a problem with the payment gateway: Insufficient funds"
 
-          it "returns a 422" do
-            api_put :purchase, :id => payment.to_param
-            response.status.should == 422
-            json_response["error"].should == "There was a problem with the payment gateway: Insufficient funds"
-          end
+          payment.reload
+          payment.state.should == "failed"
         end
 
         it "can void" do
@@ -162,7 +155,7 @@ module Spree
         end
 
         it "returns a 422 status when voiding fails" do
-          fake_response = stub(:success? => false, :to_s => "NO REFUNDS")
+          fake_response = double(:success? => false, :to_s => "NO REFUNDS")
           Spree::Gateway::Bogus.any_instance.should_receive(:void).and_return(fake_response)
           api_put :void, :id => payment.to_param
           response.status.should == 422
@@ -189,7 +182,7 @@ module Spree
           end
 
           it "returns a 422 status when crediting fails" do
-            fake_response = stub(:success? => false, :to_s => "NO CREDIT FOR YOU")
+            fake_response = double(:success? => false, :to_s => "NO CREDIT FOR YOU")
             Spree::Gateway::Bogus.any_instance.should_receive(:credit).and_return(fake_response)
             api_put :credit, :id => payment.to_param
             response.status.should == 422

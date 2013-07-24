@@ -70,14 +70,19 @@ Disallow: /account
     def setup_assets
       @lib_name = 'spree'
       %w{javascripts stylesheets images}.each do |path|
-        empty_directory "app/assets/#{path}/store"
+        empty_directory "app/assets/#{path}/store" if defined? Spree::Frontend
         empty_directory "app/assets/#{path}/admin"
       end
 
-      template "app/assets/javascripts/store/all.js"
-      template "app/assets/javascripts/admin/all.js"
-      template "app/assets/stylesheets/store/all.css"
-      template "app/assets/stylesheets/admin/all.css"
+      if defined? Spree::Frontend
+        template "app/assets/javascripts/store/all.js"
+        template "app/assets/stylesheets/store/all.css"
+      end
+
+      if defined? Spree::Backend
+        template "app/assets/javascripts/admin/all.js"
+        template "app/assets/stylesheets/admin/all.css"
+      end
     end
 
     def create_overrides_directory
@@ -99,12 +104,6 @@ Disallow: /account
       end
     end
       APP
-
-      gsub_file 'config/application.rb',
-        /config.active_record.whitelist_attributes = true/,
-        'config.active_record.whitelist_attributes = false'
-
-      append_file "config/environment.rb", "\nActiveRecord::Base.include_root_in_json = true\n"
     end
 
     def include_seed_data

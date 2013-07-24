@@ -18,6 +18,7 @@ en:
         name: Name
         numcode: ISO Code
       spree/credit_card:
+        base: ''
         cc_type: Type
         month: Month
         number: Number
@@ -193,6 +194,12 @@ en:
       spree/zone:
         one: Zone
         other: Zones
+    errors:
+      models:
+        spree/credit_card:
+          attributes:
+            base:
+              card_expired: "Card has expired"
   devise:
     confirmations:
       confirmed: Your account was successfully confirmed. You are now signed in.

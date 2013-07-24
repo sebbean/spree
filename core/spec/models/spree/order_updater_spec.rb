@@ -6,13 +6,13 @@ module Spree
     let(:updater) { Spree::OrderUpdater.new(order) }
 
     it "updates totals" do
-      payments = [stub(:amount => 5), stub(:amount => 5)]
+      payments = [double(:amount => 5), double(:amount => 5)]
       order.stub_chain(:payments, :completed).and_return(payments)
 
-      line_items = [stub(:amount => 10), stub(:amount => 20)]
+      line_items = [double(:amount => 10), double(:amount => 20)]
       order.stub :line_items => line_items
 
-      adjustments = [stub(:amount => 10), stub(:amount => -20)]
+      adjustments = [double(:amount => 10), double(:amount => -20)]
       order.stub_chain(:adjustments, :eligible).and_return(adjustments)
 
       updater.update_totals
@@ -94,10 +94,9 @@ module Spree
       end
     end
 
-
     it "state change" do
       order.shipment_state = 'shipped'
-      state_changes = stub
+      state_changes = double
       order.stub :state_changes => state_changes
       state_changes.should_receive(:create).with(
         :previous_state => nil,

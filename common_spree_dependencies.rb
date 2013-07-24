@@ -16,15 +16,14 @@ gem 'ransack', github: 'ernie/ransack', branch: 'rails-4'
 gem 'awesome_nested_set', github: 'collectiveidea/awesome_nested_set', branch: 'rails4'
 
 group :test do
-  gem 'capybara', '~> 1.1'
+  gem 'capybara', '~> 2.1'
   gem 'database_cleaner', '~> 1.0.1'
   gem 'email_spec', '1.4.0'
   gem 'factory_girl_rails', '~> 4.2.1'
-  gem 'ffaker'
   gem 'launchy'
   gem 'pry'
   gem 'rspec-rails', '~> 2.14.0'
-  gem 'selenium-webdriver', '2.33.0'
+  gem 'selenium-webdriver', '~> 2.33'
   gem 'simplecov'
   gem 'webmock', '1.8.11'
 end

@@ -6,10 +6,8 @@ Spree::Order.class_eval do
     ensure_country_id_from_api params[:ship_address_attributes]
     ensure_state_id_from_api params[:ship_address_attributes]
 
-    ensure_country_id_from_api params[:bill_address_attributes]
-    ensure_state_id_from_api params[:bill_address_attributes]
-
     order = create!(params)
+    order.associate_user!(user)
 
     order.create_shipments_from_api(shipments)
     order.create_line_items_from_api(line_items)
@@ -52,7 +50,9 @@ Spree::Order.class_eval do
     line_items_hash.each_key do |k|
       line_item = line_items_hash[k]
       self.class.ensure_variant_id_from_api(line_item)
-      self.contents.add(Spree::Variant.find(line_item[:variant_id]), line_item[:quantity])
+      extra_params = line_item.except(:variant_id, :quantity)
+      line_item = self.contents.add(Spree::Variant.find(line_item[:variant_id]), line_item[:quantity])
+      line_item.update_attributes(extra_params) unless extra_params.empty?
     end
   end
 

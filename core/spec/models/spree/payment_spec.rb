@@ -28,13 +28,13 @@ describe Spree::Payment do
   let(:amount_in_cents) { payment.amount.to_f * 100 }
 
   let!(:success_response) do
-    mock('success_response', :success? => true,
+    double('success_response', :success? => true,
                              :authorization => '123',
                              :avs_result => { 'code' => 'avs-code' },
                              :cvv_result => { 'code' => 'cvv-code', 'message' => "CVV Result"})
   end
 
-  let(:failed_response) { mock('gateway_response', :success? => false) }
+  let(:failed_response) { double('gateway_response', :success? => false) }
 
   before(:each) do
     # So it doesn't create log entries every time a processing method is called

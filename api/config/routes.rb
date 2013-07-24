@@ -21,8 +21,7 @@ Spree::Core::Engine.routes.draw do
       end
     end
 
-    resources :variants, :only => [:index] do
-    end
+    resources :variants, :only => [:index]
 
     resources :option_types do
       resources :option_values
@@ -37,8 +36,6 @@ Spree::Core::Engine.routes.draw do
         end
       end
       member do
-        put :address
-        put :delivery
         put :cancel
         put :empty
       end
