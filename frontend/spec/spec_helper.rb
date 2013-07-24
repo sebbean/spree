@@ -57,7 +57,10 @@ RSpec.configure do |config|
     else
       DatabaseCleaner.strategy = :transaction
     end
-    puts "Open transactions: #{ActiveRecord::Base.connection.open_transactions}"
+    # TODO: Find out why open_transactions ever gets below 0
+    if ActiveRecord::Base.connection.open_transactions < 0
+      ActiveRecord::Base.connection.increment_open_transactions
+    end
     DatabaseCleaner.start
     reset_spree_preferences
   end
