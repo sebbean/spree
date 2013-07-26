@@ -205,11 +205,10 @@ module Spree
     # Array of adjustments that are inclusive in the variant price. Useful for when
     # prices include tax (ex. VAT) and you need to record the tax amount separately.
     def price_adjustments
-      adjustments = []
-
-      line_items.each { |line_item| adjustments.concat line_item.adjustments }
-
-      adjustments
+      adjustments = Spree::Adjustment.where(
+        :adjustable_type => "Spree::LineItem",
+        :adjustable_id => line_items.pluck(:id)
+      )
     end
 
     # Array of totals grouped by Adjustment#label. Useful for displaying price
