@@ -13,9 +13,7 @@ end
 
 describe Spree::Admin::OrdersController do
 
-  before { Spree::Order.stub :find_by_number! => order }
-
-  context "without auth" do
+  context "with authorization" do
     stub_authorization!
 
     before do
@@ -28,6 +26,7 @@ describe Spree::Admin::OrdersController do
     end
 
     let(:order) { mock_model(Spree::Order, :complete? => true, :total => 100, :number => 'R123456789') }
+    before { Spree::Order.stub :find_by_number! => order }
 
     context "#fire" do
       it "should fire the requested event on the payment" do
@@ -49,6 +48,14 @@ describe Spree::Admin::OrdersController do
         assigns[:orders].limit_value.should == 10
       end
     end
+
+    # Test for #3346
+    context "#new" do
+      it "a new order has the current user assigned as a creator" do
+        spree_get :new
+        assigns[:order].created_by.should == controller.try_spree_current_user
+      end
+    end
   end
 
   context '#authorize_admin' do
@@ -56,6 +63,7 @@ describe Spree::Admin::OrdersController do
     let(:order) { create(:completed_order_with_totals, :number => 'R987654321') }
 
     before do
+      Spree::Order.stub :find_by_number! => order
       controller.stub :spree_current_user => user
     end
 

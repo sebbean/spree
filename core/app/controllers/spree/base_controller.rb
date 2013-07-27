@@ -7,6 +7,7 @@ class Spree::BaseController < ApplicationController
   include Spree::Core::ControllerHelpers::SSL
   include Spree::Core::ControllerHelpers::Common
   include Spree::Core::ControllerHelpers::StrongParameters
+  include Spree::Core::ControllerHelpers::Search
 
   respond_to :html
 end
