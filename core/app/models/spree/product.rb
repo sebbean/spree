@@ -43,7 +43,7 @@ module Spree
       class_name: 'Spree::Variant'
 
     has_many :variants_including_master,
-      -> { where(deleted_at: nil).order("#{::Spree::Variant.quoted_table_name}.position ASC") },
+      -> { order("#{::Spree::Variant.quoted_table_name}.position ASC") },
       class_name: 'Spree::Variant',
       dependent: :destroy
 
