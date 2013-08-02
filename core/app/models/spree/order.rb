@@ -49,7 +49,8 @@ module Spree
     has_many :return_authorizations, dependent: :destroy
     has_many :adjustments,
       -> { order("#{Spree::Adjustment.table_name}.created_at ASC") },
-      as: :adjustable, dependent: :destroy, inverse_of: :source
+      as: :adjustable,
+      dependent: :destroy
 
     accepts_nested_attributes_for :line_items
     accepts_nested_attributes_for :bill_address
