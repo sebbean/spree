@@ -2,9 +2,9 @@
 require 'spec_helper'
 
 describe "Products" do
-  stub_authorization!
-
   context "as admin user" do
+    stub_authorization!
+
     before(:each) do
       visit spree.admin_path
     end
@@ -140,10 +140,11 @@ describe "Products" do
       before(:each) do
         @option_type_prototype = prototype
         @property_prototype = create(:prototype, :name => "Random")
+        @shipping_category = create(:shipping_category)
         click_link "Products"
         click_link "admin_new_product"
         within('#new_product') do
-         page.should have_content("SKU")
+          page.should have_content("SKU")
         end
       end
 
@@ -154,6 +155,7 @@ describe "Products" do
         fill_in "product_available_on", :with => "2012/01/24"
         select "Size", :from => "Prototype"
         check "Large"
+        select @shipping_category.name, from: "product_shipping_category_id"
         click_button "Create"
         page.should have_content("successfully created!")
         Spree::Product.last.variants.length.should == 1
@@ -180,10 +182,11 @@ describe "Products" do
 
     context "creating a new product" do
       before(:each) do
+        @shipping_category = create(:shipping_category)
         click_link "Products"
         click_link "admin_new_product"
         within('#new_product') do
-         page.should have_content("SKU")
+          page.should have_content("SKU")
         end
       end
 
@@ -192,6 +195,7 @@ describe "Products" do
         fill_in "product_sku", :with => "B100"
         fill_in "product_price", :with => "100"
         fill_in "product_available_on", :with => "2012/01/24"
+        select @shipping_category.name, from: "product_shipping_category_id"
         click_button "Create"
         page.should have_content("successfully created!")
         click_button "Update"
@@ -207,6 +211,7 @@ describe "Products" do
       it "can set the count on hand to a null value", :js => true do
         fill_in "product_name", :with => "Baseball Cap"
         fill_in "product_price", :with => "100"
+        select @shipping_category.name, from: "product_shipping_category_id"
         click_button "Create"
         page.should have_content("successfully created!")
         click_button "Update"
@@ -254,8 +259,8 @@ describe "Products" do
       end
 
       before(:each) do
-         @option_type_prototype = prototype
-         @property_prototype = create(:prototype, :name => "Random")
+        @option_type_prototype = prototype
+        @property_prototype = create(:prototype, :name => "Random")
       end
 
       it 'should parse correctly available_on' do
@@ -274,15 +279,46 @@ describe "Products" do
 
         within(:css, "#prototypes tr#row_1") do
           click_link 'Select'
+          wait_for_ajax
         end
 
         page.all('tr.product_property').size > 1
-
         within(:css, "tr.product_property:first-child") do
           first('input[type=text]')[:value].should eq('baseball_cap_color')
         end
       end
     end
+  end
+  context 'with only product permissions' do
+    custom_authorization! do |user|
+      can [:admin, :update, :index, :read], Spree::Product
+    end
+    let!(:product) { create(:product) }
 
+    it "should only display accessible links on index" do
+      visit spree.admin_products_path
+      page.should have_link('Products')
+      page.should_not have_link('Option Types')
+      page.should_not have_link('Properties')
+      page.should_not have_link('Prototypes')
+
+      page.should_not have_link('New Product')
+      page.should_not have_css('a.clone')
+      page.should have_css('a.edit')
+      page.should_not have_css('a.delete-resource')
+    end
+    it "should only display accessible links on edit" do
+      visit spree.admin_product_path(product)
+
+      # product tabs should be hidden
+      page.should have_link('Product Details')
+      page.should_not have_link('Images')
+      page.should_not have_link('Variants')
+      page.should_not have_link('Product Properties')
+      page.should_not have_link('Stock Management')
+
+      # no create permission
+      page.should_not have_link('New Product')
+    end
   end
 end

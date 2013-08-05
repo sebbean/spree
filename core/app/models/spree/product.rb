@@ -39,7 +39,7 @@ module Spree
       dependent: :destroy
 
     has_many :variants,
-      -> { where(is_master: false, deleted_at: nil).order("#{::Spree::Variant.quoted_table_name}.position ASC") },
+      -> { where(is_master: false).order("#{::Spree::Variant.quoted_table_name}.position ASC") },
       class_name: 'Spree::Variant'
 
     has_many :variants_including_master,
@@ -65,8 +65,10 @@ module Spree
 
     accepts_nested_attributes_for :variants, allow_destroy: true
 
-    validates :name, :permalink, presence: true
+    validates :name, presence: true
+    validates :permalink, presence: true
     validates :price, presence: true, if: proc { Spree::Config[:require_master_price] }
+    validates :shipping_category_id, presence: true
 
     attr_accessor :option_values_hash
 
