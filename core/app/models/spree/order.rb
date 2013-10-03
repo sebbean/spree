@@ -34,7 +34,6 @@ module Spree
     belongs_to :ship_address, foreign_key: :ship_address_id, class_name: 'Spree::Address'
     alias_attribute :shipping_address, :ship_address
 
-    has_many :state_changes, as: :stateful
     has_many :line_items, -> { order('created_at ASC') }, dependent: :destroy
     has_many :payments, dependent: :destroy
     has_many :return_authorizations, dependent: :destroy
@@ -322,13 +321,6 @@ module Spree
       updater.run_hooks
 
       deliver_order_confirmation_email
-
-      self.state_changes.create(
-        previous_state: 'cart',
-        next_state:     'complete',
-        name:           'order' ,
-        user_id:        self.user_id
-      )
     end
 
     def deliver_order_confirmation_email
@@ -434,19 +426,6 @@ module Spree
 
     def has_step?(step)
       checkout_steps.include?(step)
-    end
-
-    def state_changed(name)
-      state = "#{name}_state"
-      if persisted?
-        old_state = self.send("#{state}_was")
-        self.state_changes.create(
-          previous_state: old_state,
-          next_state:     self.send(state),
-          name:           name,
-          user_id:        self.user_id
-        )
-      end
     end
 
     def coupon_code=(code)

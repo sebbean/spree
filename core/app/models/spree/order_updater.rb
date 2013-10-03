@@ -118,7 +118,6 @@ module Spree
         end
       end
 
-      order.state_changed('shipment')
       order.shipment_state
     end
 
@@ -144,8 +143,6 @@ module Spree
       else
         order.payment_state = 'paid'
       end
-
-      order.state_changed('payment')
     end
     
     private

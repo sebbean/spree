@@ -234,11 +234,6 @@ describe Spree::Order do
       expect(adjustments).to receive(:update_all).with(state: 'closed')
       order.finalize!
     end
-
-    it "should log state event" do
-      order.state_changes.should_receive(:create).exactly(3).times #order, shipment & payment state changes
-      order.finalize!
-    end
   end
 
   context "#process_payments!" do

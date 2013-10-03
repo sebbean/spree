@@ -114,20 +114,6 @@ module Spree
       end
     end
 
-    it "state change" do
-      order.shipment_state = 'shipped'
-      state_changes = double
-      order.stub :state_changes => state_changes
-      state_changes.should_receive(:create).with(
-        :previous_state => nil,
-        :next_state => 'shipped',
-        :name => 'shipment',
-        :user_id => nil
-      )
-
-      order.state_changed('shipment')
-    end
-
     context "completed order" do
       before { order.stub completed?: true }
 
