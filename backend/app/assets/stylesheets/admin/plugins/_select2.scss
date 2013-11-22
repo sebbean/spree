@@ -23,8 +23,8 @@
     .select2-search-choice-close {
       background-image: none !important;
       font-size: 100% !important;
-      @extend .icon-remove;
-      @extend [class^="icon-"]:before;
+      @extend .fa-remove;
+      @extend [class^="fa-"]:before;
       margin-top: 2px;
     }
   }
@@ -35,7 +35,7 @@
     }
 
     &.select2-dropdown-open .select2-choice div b {
-      @extend .icon-caret-up
+      @extend .fa-caret-up
     }
   }
 }
@@ -53,14 +53,14 @@
 }
 
 .select2-search {
-  @extend .icon-search;
+  @extend .fa-search;
 
   font-size: 100%;
   color: darken($color-border, 15);
   padding: 0 9px 0 0;
 
   &:before {
-    @extend [class^="icon-"]:before;
+    @extend [class^="fa-"]:before;
 
     position: absolute;
     top: 16px;
@@ -174,8 +174,8 @@
       .select2-search-choice-close {
         background-image: none !important;
         font-size: 85% !important;
-        @extend .icon-remove;
-        @extend [class^="icon-"]:before;
+        @extend .fa-remove;
+        @extend [class^="fa-"]:before;
         margin-left: 2px;
         color: $color-1;
       }

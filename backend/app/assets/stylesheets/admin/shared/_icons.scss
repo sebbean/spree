@@ -1,5 +1,5 @@
 // Some fixes for fontwesome stylesheets
-[class^="icon-"], [class*=" icon-"] {
+[class^="fa-"], [class*=" fa-"] {
   &:before {
     padding-right: 5px;
   }
@@ -14,11 +14,11 @@
   }
 }
 
-.icon-email:before    { @extend .icon-envelope:before }
-.icon-resume:before   { @extend .icon-refresh:before  }
+.icon-email:before    { @extend .fa-envelope:before }
+.icon-resume:before   { @extend .fa-refresh:before  }
 
 .icon-cancel:before,
-.icon-void:before     { @extend .icon-remove:before   }
+.icon-void:before     { @extend .fa-remove:before   }
 
-.icon-capture:before  { @extend .icon-ok:before       }
-.icon-credit:before   { @extend .icon-ok:before       }
+.icon-capture:before  { @extend .fa-ok:before       }
+.icon-credit:before   { @extend .fa-ok:before       }
