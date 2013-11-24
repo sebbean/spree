@@ -101,7 +101,6 @@ module Spree
       end
 
       def button(text, icon_name = nil, button_type = 'submit', options={})
-        binding.pry
         button_tag(text, options.merge(:type => button_type, :class => "fa fa-#{icon_name} button"))
       end
 
