@@ -41,7 +41,7 @@ table {
         font-size: $body-font-size;
       }
 
-      [class*='fa-'].no-text {
+      [class*='icon_'].no-text {
         font-size: 120%;
         background-color: very-light($color-3);
         border: 1px solid $color-border;
@@ -51,10 +51,8 @@ table {
         display: inline-block;
         padding-top: 2px;
 
-        &:before {
-          text-align: center !important;
-          width: 27px;
-          display: inline-block;
+        i {
+          margin-left: 6px;
         }
 
         &:hover {
