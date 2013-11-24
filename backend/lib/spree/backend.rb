@@ -4,6 +4,7 @@ require 'jquery-rails'
 require 'jquery-ui-rails'
 require 'deface'
 require 'select2-rails'
+require 'font/awesome/sass'
 
 require 'spree/core'
 

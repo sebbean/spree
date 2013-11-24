@@ -3,6 +3,7 @@ require 'rails/generators'
 require 'jquery-rails'
 require 'canonical-rails'
 require 'deface'
+require 'font/awesome/sass'
 
 require 'spree/core'
 
