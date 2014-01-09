@@ -5,7 +5,9 @@ describe Spree::Admin::ReportsController do
 
   describe 'ReportsController.available_reports' do
     it 'should contain sales_total' do
-      Spree::Admin::ReportsController.available_reports.keys.include?(:sales_total).should be_true
+      expect {
+        Spree::Admin::ReportsController.available_reports.keys.include?(:sales_total)
+      }.to eq(true)
     end
 
     it 'should have the proper sales total report description' do
@@ -18,7 +20,9 @@ describe Spree::Admin::ReportsController do
     context 'when adding the report name' do
       it 'should contain the report' do
         Spree::Admin::ReportsController.add_available_report!(:some_report)
-        Spree::Admin::ReportsController.available_reports.keys.include?(:some_report).should be_true
+        expect {
+          Spree::Admin::ReportsController.available_reports.keys.include?(:some_report)
+        }.to eq(true)
       end
     end
   end

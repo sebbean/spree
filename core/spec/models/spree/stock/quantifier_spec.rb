@@ -2,9 +2,9 @@ require 'spec_helper'
 
 shared_examples_for 'unlimited supply' do
   it 'can_supply? any amount' do
-    subject.can_supply?(1).should be_true
-    subject.can_supply?(101).should be_true
-    subject.can_supply?(100_001).should be_true
+    expect(subject.can_supply?(1)).to be(true)
+    expect(subject.can_supply?(101)).to be(true)
+    expect(subject.can_supply?(101_001)).to be(true)
   end
 end
 
@@ -45,7 +45,7 @@ module Spree
 
         context 'when stock item allows backordering' do
 
-          specify { subject.backorderable?.should be_true }
+          specify { expect(subject.backorderable?).to eq(true) }
 
           it_should_behave_like 'unlimited supply'
         end
@@ -53,12 +53,12 @@ module Spree
         context 'when stock item prevents backordering' do
           before { stock_item.update_attributes(backorderable: false) }
 
-          specify { subject.backorderable?.should be_false }
+          specify { expect(subject.backorderable?).to eq(false) }
 
           it 'can_supply? only upto total_on_hand' do
-            subject.can_supply?(1).should be_true
-            subject.can_supply?(10).should be_true
-            subject.can_supply?(11).should be_false
+            expect(subject.can_supply?(1)).to eq(true)
+            expect(subject.can_supply?(10)).to eq(true)
+            expect(subject.can_supply?(11)).to eq(false)
           end
         end
 
@@ -78,7 +78,7 @@ module Spree
         end
 
         context 'when any stock item allows backordering' do
-          specify { subject.backorderable?.should be_true }
+          specify { expect(subject.backorderable?).to eq(true) }
 
           it_should_behave_like 'unlimited supply'
         end
@@ -86,12 +86,12 @@ module Spree
         context 'when all stock items prevent backordering' do
           before { stock_item.update_attributes(backorderable: false) }
 
-          specify { subject.backorderable?.should be_false }
+          specify { expect(subject.backorderable?).to eq(false) }
 
           it 'can_supply? upto total_on_hand' do
-            subject.can_supply?(1).should be_true
-            subject.can_supply?(15).should be_true
-            subject.can_supply?(16).should be_false
+            expect(subject.can_supply?(1)).to eq(true)
+            expect(subject.can_supply?(15)).to eq(true)
+            expect(subject.can_supply?(16)).to eq(false)
           end
         end
 

@@ -150,7 +150,7 @@ describe Spree::LineItem do
         line_item.target_shipment = order.shipments.first
 
         line_item.save
-        expect(line_item).to have(0).errors_on(:quantity)
+        expect(line_item.errors_on(:quantity).size).to eq(0)
       end
 
       it "doesnt allow to increase item quantity" do
@@ -159,7 +159,7 @@ describe Spree::LineItem do
         line_item.target_shipment = order.shipments.first
 
         line_item.save
-        expect(line_item).to have(1).errors_on(:quantity)
+        expect(line_item.errors_on(:quantity).size).to eq(1)
       end
     end
 
@@ -177,7 +177,7 @@ describe Spree::LineItem do
         line_item.target_shipment = order.shipments.first
 
         line_item.save
-        expect(line_item).to have(0).errors_on(:quantity)
+        expect(line_item.errors_on(:quantity).size).to eq(0)
       end
 
       it "doesnt allow to increase quantity over stock availability" do
@@ -186,7 +186,7 @@ describe Spree::LineItem do
         line_item.target_shipment = order.shipments.first
 
         line_item.save
-        expect(line_item).to have(1).errors_on(:quantity)
+        expect(line_item.errors_on(:quantity).size).to eq(1)
       end
     end
   end

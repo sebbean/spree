@@ -115,7 +115,7 @@ describe Spree::Product do
         it "should set deleted_at value" do
           product.destroy
           product.deleted_at.should_not be_nil
-          product.variants_including_master.all? { |v| !v.deleted_at.nil? }.should be_true
+          expect(product.variants_including_master.all? { |v| !v.deleted_at.nil? }).to eq(true)
         end
       end
     end

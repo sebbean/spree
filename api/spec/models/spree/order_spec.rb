@@ -258,7 +258,7 @@ module Spree
           { "label" => "Promotion Discount", "amount" => "-3.00" }] }
 
       order = Order.build_from_api(user, params)
-      order.adjustments.all?(&:finalized?).should be_true
+      expect(order.adjustments.all?(&:finalized?)).to eq(true)
       order.adjustments.first.label.should eq 'Shipping Discount'
       order.adjustments.first.amount.should eq -4.99
     end

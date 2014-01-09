@@ -16,8 +16,8 @@ module Spree
 
       subject { OrderCounter.new(order) }
 
-      its(:variants) { should eq [variant1, variant2] }
-      its(:variants_with_remaining) { should eq [variant1] }
+      it { subject.variants.should eq([variant1, variant2]) }
+      it { subject.variants_with_remaining.should eq([variant1]) }
       it { should be_remaining }
 
       it 'counts ordered' do

@@ -69,7 +69,7 @@ describe Spree::Order do
       it "should be true if shipment_state is #{shipment_state}" do
         order.stub :completed? => true
         order.shipment_state = shipment_state
-        order.can_cancel?.should be_true
+        expect(order.can_cancel?).to eq(true)
       end
     end
 
@@ -77,7 +77,7 @@ describe Spree::Order do
       it "should be false if shipment_state is #{shipment_state}" do
         order.stub :completed? => true
         order.shipment_state = shipment_state
-        order.can_cancel?.should be_false
+        expect(order.can_cancel?).to eq(false)
       end
     end
 

@@ -137,7 +137,7 @@ describe Spree::Address do
     it "requires zipcode" do
       address.zipcode = ""
       address.valid?
-      address.should have(1).error_on(:zipcode)
+      expect(address.errors_on(:zipcode).size).to eq(1)
     end
 
     context "phone not required" do
@@ -146,7 +146,7 @@ describe Spree::Address do
       it "shows no errors when phone is blank" do
         address.phone = ""
         address.valid?
-        address.should have(:no).errors_on(:phone)
+        expect(address.errors_on(:phone).size).to eq(0)
       end
     end
 
@@ -156,7 +156,7 @@ describe Spree::Address do
       it "shows no errors when phone is blank" do
         address.zipcode = ""
         address.valid?
-        address.should have(:no).errors_on(:zipcode)
+        expect(address.errors_on(:zipcode).size).to eq(0)
       end
     end
   end
@@ -244,6 +244,6 @@ describe Spree::Address do
 
   context "defines require_phone? helper method" do
     let(:address) { stub_model(Spree::Address) }
-    specify { address.instance_eval{ require_phone? }.should be_true}
+    specify { address.instance_eval{ require_phone? }.should == true}
   end
 end

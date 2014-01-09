@@ -118,7 +118,7 @@ module Spree
         # Find the correct shipping rate for that shipment...
         json_shipping_rate = json_shipment['shipping_rates'].detect { |sr| sr["id"] == shipping_rate.id }
         # ... And finally ensure that it's selected
-        json_shipping_rate['selected'].should be_true
+        expect(json_shipping_rate['selected']).to eq(true)
         # Order should automatically transfer to payment because all criteria are met
         json_response['state'].should == 'payment'
       end

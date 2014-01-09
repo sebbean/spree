@@ -49,7 +49,7 @@ RSpec.configure do |config|
     DatabaseCleaner.clean_with :truncation
   end
 
-  config.before(:each) do
+  config.before(:each) do |example|
     WebMock.disable!
     if example.metadata[:js]
       DatabaseCleaner.strategy = :truncation
@@ -89,4 +89,6 @@ RSpec.configure do |config|
   config.include Paperclip::Shoulda::Matchers
 
   config.fail_fast = ENV['FAIL_FAST'] || false
+
+  config.expose_current_running_example_as :example # RSpec 3 compatibility
 end

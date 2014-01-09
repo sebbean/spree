@@ -25,7 +25,7 @@ module Spree::Api
         order.reload.total.should == 109.00
         json_response["success"].should == "The coupon code was successfully applied to your order."
         json_response["error"].should be_blank
-        json_response["successful"].should be_true
+        expect(json_response["successful"]).to eq(true)
       end
 
       context "with an expired promotion" do
@@ -40,7 +40,7 @@ module Spree::Api
           response.status.should == 422
           json_response["success"].should be_blank
           json_response["error"].should == "The coupon code is expired"
-          json_response["successful"].should be_false
+          expect(json_response["successful"]).to eq(false)
         end
       end
     end

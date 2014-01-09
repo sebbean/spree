@@ -9,8 +9,8 @@ module Spree
 
     subject { StockTransfer.create(reference: 'PO123') }
 
-    its(:reference) { should eq 'PO123' }
-    its(:to_param) { should match /T\d+/ }
+    it { subject.reference.should eq('PO123') }
+    it { subject.to_param.should match(/T\d+/) }
 
     it 'transfers variants between 2 locations' do
       variants = { variant => 5 }
@@ -21,7 +21,7 @@ module Spree
 
       source_location.count_on_hand(variant).should eq 5
       destination_location.count_on_hand(variant).should eq 5
-      subject.should have(2).stock_movements
+      expect(subject.stock_movements.count).to eq(2)
 
       subject.source_location.should eq source_location
       subject.destination_location.should eq destination_location
@@ -36,7 +36,7 @@ module Spree
       subject.receive(destination_location, variants)
 
       destination_location.count_on_hand(variant).should eq 5
-      subject.should have(1).stock_movements
+      expect(subject.stock_movements.count).to eq(1)
 
       subject.source_location.should be_nil
       subject.destination_location.should eq destination_location

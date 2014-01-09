@@ -56,7 +56,7 @@ describe Spree::Api::BaseController do
                    'name' => 'test order' }
 
     mapped = subject.map_nested_attributes_keys(klass, attributes)
-    mapped.has_key?('line_items_attributes').should be_true
-    mapped.has_key?('name').should be_true
+    expect(mapped.has_key?('line_items_attributes')).to eq(true)
+    expect(mapped.has_key?('name')).to eq(true)
   end
 end

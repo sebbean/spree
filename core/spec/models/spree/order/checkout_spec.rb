@@ -33,17 +33,17 @@ describe Spree::Order do
     end
 
     it '.find_transition when contract was broken' do
-      Spree::Order.find_transition({foo: :bar, baz: :dog}).should be_false
+      expect(Spree::Order.find_transition({foo: :bar, baz: :dog})).to be_nil
     end
 
     it '.remove_transition' do
       options = {:from => transitions.first.keys.first, :to => transitions.first.values.first}
       Spree::Order.stub(:next_event_transition).and_return([options])
-      Spree::Order.remove_transition(options).should be_true
+      expect(Spree::Order.remove_transition(options)).to be_truthy
     end
 
     it '.remove_transition when contract was broken' do
-      Spree::Order.remove_transition(nil).should be_false
+      expect(Spree::Order.remove_transition(nil)).to be_nil
     end
 
     context "#checkout_steps" do
@@ -260,7 +260,7 @@ describe Spree::Order do
 
     it "should not keep old events when checkout_flow is redefined" do
       state_machine = Spree::Order.state_machine
-      state_machine.states.any? { |s| s.name == :address }.should be_false
+      expect(state_machine.states.any? { |s| s.name == :address }).to eq(false)
       known_states = state_machine.events[:next].branches.map(&:known_states).flatten
       known_states.should_not include(:address)
       known_states.should_not include(:delivery)

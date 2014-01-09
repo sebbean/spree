@@ -287,7 +287,7 @@ describe Spree::Variant do
         end
 
         it 'returns true if stock_items in stock' do
-          variant.in_stock?.should be_true
+          expect(variant.in_stock?).to eq(true)
         end
       end
 
@@ -298,7 +298,7 @@ describe Spree::Variant do
         end
 
         it 'return false if stock_items out of stock' do
-          variant.in_stock?.should be_false
+          expect(variant.in_stock?).to eq(false)
         end
       end
 
@@ -308,10 +308,10 @@ describe Spree::Variant do
         end
 
         it 'returns correctt value' do
-          variant.in_stock?.should be_true
-          variant.in_stock?(2).should be_true
-          variant.in_stock?(10).should be_true
-          variant.in_stock?(11).should be_false
+          expect(variant.in_stock?).to eq(true)
+          expect(variant.in_stock?(2)).to eq(true)
+          expect(variant.in_stock?(10)).to eq(true)
+          expect(variant.in_stock?(11)).to eq(false)
         end
       end
     end
@@ -327,7 +327,7 @@ describe Spree::Variant do
         end
 
         it 'returns true if stock_items in stock' do
-          variant.in_stock?.should be_true
+          expect(variant.in_stock?).to eq(true)
         end
       end
     end

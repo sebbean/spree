@@ -121,13 +121,13 @@ module Spree
               promotion.update_column(:usage_limit, 1)
               coupon = Coupon.new(order)
               coupon.apply
-              expect(coupon.successful?).to be_true
+              expect(coupon.successful?).to eq(true)
 
               order_2 = create(:order)
               order_2.stub :coupon_code => "10off"
               coupon = Coupon.new(order_2)
               coupon.apply
-              expect(coupon.successful?).to be_false
+              expect(coupon.successful?).to eq(false)
               expect(coupon.error).to eq Spree.t(:coupon_code_max_usage)
             end
           end

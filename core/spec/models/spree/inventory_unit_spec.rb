@@ -119,7 +119,7 @@ describe Spree::InventoryUnit do
 
     it "should create a stock movement" do
       Spree::InventoryUnit.finalize_units!(inventory_units)
-      inventory_units.any?(&:pending).should be_false
+      expect(inventory_units.any?(&:pending)).to eq(false)
     end
   end
 end

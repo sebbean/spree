@@ -458,12 +458,12 @@ describe Spree::Payment do
   describe "#can_credit?" do
     it "is true if credit_allowed > 0" do
       payment.stub(:credit_allowed).and_return(100)
-      payment.can_credit?.should be_true
+      expect(payment.can_credit?).to eq(true)
     end
 
     it "is false if credit_allowed is 0" do
       payment.stub(:credit_allowed).and_return(0)
-      payment.can_credit?.should be_false
+      expect(payment.can_credit?).to eq(false)
     end
   end
 
@@ -572,8 +572,8 @@ describe Spree::Payment do
       payment = Spree::Payment.new(params)
       payment.should_not be_valid
       payment.source.should_not be_nil
-      payment.source.should have(1).error_on(:number)
-      payment.source.should have(1).error_on(:verification_value)
+      expect(payment.source.errors_on(:number).size).to eq(1)
+      expect(payment.source.errors_on(:verification_value).size).to eq(1)
     end
   end
 
@@ -648,57 +648,57 @@ describe Spree::Payment do
       context "amount is a decimal" do
         let(:amount) { '2.99' }
 
-        its(:amount) { should eql(BigDecimal('2.99')) }
+        it { expect(subject.amount).to eq(BigDecimal('2.99')) }
       end
 
       context "amount is an integer" do
         let(:amount) { '2' }
 
-        its(:amount) { should eql(BigDecimal('2.0')) }
+        it { expect(subject.amount).to eq(BigDecimal('2.0')) }
       end
 
       context "amount contains a dollar sign" do
         let(:amount) { '$2.99' }
 
-        its(:amount) { should eql(BigDecimal('2.99')) }
+        it { expect(subject.amount).to eq(BigDecimal('2.99')) }
       end
 
       context "amount contains a comma" do
         let(:amount) { '$2,999.99' }
 
-        its(:amount) { should eql(BigDecimal('2999.99')) }
+        it { expect(subject.amount).to eq(BigDecimal('2999.99')) }
       end
 
       context "amount contains a negative sign" do
         let(:amount) { '-2.99' }
 
-        its(:amount) { should eql(BigDecimal('-2.99')) }
+        it { expect(subject.amount).to eq(BigDecimal('-2.99')) }
       end
 
       context "amount is invalid" do
         let(:amount) { 'invalid' }
 
         # this is a strange default for ActiveRecord
-        its(:amount) { should eql(BigDecimal('0')) }
+        it { expect(subject.amount).to eq(BigDecimal('0')) }
       end
 
       context "amount is an empty string" do
         let(:amount) { '' }
 
-        its(:amount) { should be_nil }
+        it { expect(subject.amount).to be_nil }
       end
     end
 
     context "when the amount is a number" do
       let(:amount) { 1.55 }
 
-      its(:amount) { should eql(BigDecimal('1.55')) }
+      it { expect(subject.amount).to eq(BigDecimal('1.55')) }
     end
 
     context "when the amount is nil" do
       let(:amount) { nil }
 
-      its(:amount) { should be_nil }
+      it { expect(subject.amount).to be_nil }
     end
   end
 
@@ -747,7 +747,7 @@ describe Spree::Payment do
   context "state changes" do
     it "are logged to the database" do
       payment.state_changes.should be_empty
-      expect(payment.process!).to be_true
+      expect(payment.process!).to eq(true)
       payment.state_changes.count.should == 2
       changes = payment.state_changes.map { |change| { change.previous_state => change.next_state} }
       expect(changes).to eq([

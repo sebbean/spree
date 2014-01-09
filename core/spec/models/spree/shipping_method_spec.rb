@@ -24,17 +24,17 @@ describe Spree::ShippingMethod do
     before { subject.valid? }
 
     it "validates presence of name" do
-      subject.should have(1).error_on(:name)
+      expect(subject.errors_on(:name).size).to eq(1)
     end
 
     context "shipping category" do
       it "validates presence of at least one" do
-        subject.should have(1).error_on(:base)
+        expect(subject.errors_on(:base).size).to eq(1)
       end
 
       context "one associated" do
         before { subject.shipping_categories.push create(:shipping_category) }
-        it { subject.should have(0).error_on(:base) }
+        it { expect(subject.errors_on(:name).size).to eq(1) }
       end
     end
   end

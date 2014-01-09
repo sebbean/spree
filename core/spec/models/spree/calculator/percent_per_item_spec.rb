@@ -41,9 +41,9 @@ describe Spree::Calculator::PercentPerItem do
   end
 
   it "computes on promotion when promotion is present" do
-    calculator.send(:compute_on_promotion?).should_not be_true
+    expect(calculator.send(:compute_on_promotion?)).to eq(false)
     calculator.stub(:calculable => promotion_calculable)
-    calculator.send(:compute_on_promotion?).should be_true
+    expect(calculator.send(:compute_on_promotion?)).to eq(true)
   end
 
   # test that we do not fail when one promorule does not respond to products

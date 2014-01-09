@@ -420,7 +420,7 @@ module Spree
             shipping_rate = shipment["shipping_rates"][0]
             shipping_rate["name"].should == json_shipping_method["name"]
             shipping_rate["cost"].should == "10.0"
-            shipping_rate["selected"].should be_true
+            expect(shipping_rate["selected"]).to eq(true)
             shipping_rate["display_cost"].should == "$10.00"
 
             shipment["stock_location_name"].should_not be_blank
