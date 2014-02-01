@@ -8,7 +8,7 @@ module Spree
 
     respond_to :html
 
-    before_filter :assign_order, only: :update
+    before_filter :assign_order_with_lock, only: :update
     before_filter :apply_coupon_code, only: :update
     skip_before_filter :verify_authenticity_token
 
@@ -44,7 +44,7 @@ module Spree
 
     # Adds a new item to the order (creating a new order if none already exists)
     def populate
-      populator = Spree::OrderPopulator.new(current_order(true), current_currency)
+      populator = Spree::OrderPopulator.new(current_order(create_order_if_necessary: true), current_currency)
       if populator.populate(params[:variant_id], params[:quantity])
         current_order.ensure_updated_shipments
 
@@ -94,8 +94,8 @@ module Spree
         end
       end
 
-      def assign_order
-        @order = current_order
+      def assign_order_with_lock
+        @order = current_order(lock: true)
         unless @order
           flash[:error] = Spree.t(:order_not_found)
           redirect_to root_path and return
