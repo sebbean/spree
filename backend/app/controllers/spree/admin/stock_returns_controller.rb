@@ -8,6 +8,10 @@ module Spree
         @stock_returns = @order.stock_returns
       end
 
+      def show
+        @stock_return = @order.stock_returns.find(params[:id])
+      end
+
       def new
         @stock_return = StockReturn.new
       end

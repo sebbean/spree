@@ -1,0 +1,20 @@
+<%= render :partial => 'spree/admin/shared/order_tabs', :locals => { :current => 'Stock Returns' } %>
+
+<% content_for :page_actions do %>
+  <li><%= button_link_to Spree.t(:back_to_stock_returns), spree.admin_order_stock_returns_path(@order), :icon => 'icon-arrow-left' %></li>
+<% end %>
+
+<% content_for :page_title do %>
+  <i class="icon-arrow-right"></i> <%= Spree.t(:stock_returns) %>
+  <i class="icon-arrow-right"></i> <%= @stock_return.id %>
+<% end %>
+
+<div id='refunds'>
+  <%= form_tag do %>
+    <%= label_tag 'variant_id', Spree.t(:sku) %>
+    <%= select_tag 'variant_id', options_from_collection_for_select(@order.variants, :id, :sku) %>
+    <%= label_tag 'quantity', Spree.t(:quantity) %>
+    <%= text_field_tag 'quantity' %>
+    <%= submit_tag 'Add' %>
+  <% end %>
+</div>
