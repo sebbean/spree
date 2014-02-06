@@ -1,0 +1,2 @@
+object @stock_return
+attributes *stock_return_attributes
