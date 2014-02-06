@@ -24,14 +24,6 @@
       </li>
     <% end %>
 
-    <% if can? :index, Spree::ReturnAuthorization %>
-      <% if @order.completed? %>
-        <li<%== ' class="active"' if current == 'Return Authorizations' %>>
-          <%= link_to_with_icon 'icon-share-alt', Spree.t(:return_authorizations), admin_order_return_authorizations_url(@order) %>
-        </li>
-      <% end %>
-    <% end %>
-
     <% if can? :index, Spree::StockReturn %>
       <% if @order.completed? %>
         <li<%== ' class="active"' if current == 'Stock Returns' %>>

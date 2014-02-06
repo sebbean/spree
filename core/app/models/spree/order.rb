@@ -39,7 +39,6 @@ module Spree
     has_many :state_changes, as: :stateful
     has_many :line_items, -> { order('created_at ASC') }, dependent: :destroy, inverse_of: :order
     has_many :payments, dependent: :destroy
-    has_many :return_authorizations, dependent: :destroy
     has_many :adjustments, -> { order("#{Adjustment.table_name}.created_at ASC") }, as: :adjustable, dependent: :destroy
     has_many :line_item_adjustments, through: :line_items, source: :adjustments
     has_many :shipment_adjustments, through: :shipments, source: :adjustments
@@ -233,10 +232,6 @@ module Spree
     def allow_cancel?
       return false unless completed? and state != 'canceled'
       shipment_state.nil? || %w{ready backorder pending}.include?(shipment_state)
-    end
-
-    def awaiting_returns?
-      return_authorizations.any? { |return_authorization| return_authorization.authorized? }
     end
 
     def contents

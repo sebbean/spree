@@ -933,9 +933,6 @@ en:
     resume: resume
     resumed: Resumed
     return: return
-    return_authorization: Return Authorization
-    return_authorization_updated: Return authorization updated
-    return_authorizations: Return Authorizations
     return_quantity: Return Quantity
     returned: Returned
     review: Review

@@ -33,13 +33,6 @@ Spree::Core::Engine.add_routes do
     resources :orders do
       resources :addresses, :only => [:show, :update]
 
-      resources :return_authorizations do
-        member do
-          put :add
-          put :cancel
-          put :receive
-        end
-      end
       member do
         put :cancel
         put :empty
