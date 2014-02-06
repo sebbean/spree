@@ -45,6 +45,7 @@ module Spree
     has_many :shipment_adjustments, through: :shipments, source: :adjustments
     has_many :all_adjustments, class_name: 'Spree::Adjustment'
     has_many :inventory_units, inverse_of: :order
+    has_many :stock_returns, dependent: :destroy
 
     has_and_belongs_to_many :promotions, join_table: 'spree_orders_promotions'
 

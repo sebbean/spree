@@ -94,6 +94,7 @@ Spree::Core::Engine.add_routes do
 
         resources :log_entries
       end
+      resources :stock_returns
     end
 
     resource :general_settings do

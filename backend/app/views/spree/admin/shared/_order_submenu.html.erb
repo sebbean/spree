@@ -31,5 +31,13 @@
         </li>
       <% end %>
     <% end %>
+
+    <% if can? :index, Spree::StockReturn %>
+      <% if @order.completed? %>
+        <li<%== ' class="active"' if current == 'Stock Returns' %>>
+          <%= link_to_with_icon 'icon-share-alt', Spree.t(:stock_returns), admin_order_stock_returns_url(@order) %>
+        </li>
+      <% end %>
+    <% end %>
   </ul>
 </nav>
