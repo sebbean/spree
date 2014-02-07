@@ -3,7 +3,7 @@
 <% content_for :page_actions do %>
   <% if @order.shipments.any? &:shipped? %>
     <li>
-      <%= button_link_to Spree.t(:new_stock_return), new_admin_order_stock_return_url(@order), :icon => 'icon-plus' %>
+      <%= button_link_to Spree.t(:new_stock_return), admin_order_stock_returns_url(@order), :method => :post, :icon => 'icon-plus' %>
     </li>
   <% end %>
   <li><%= button_link_to Spree.t(:back_to_orders_list), spree.admin_orders_path, :icon => 'icon-arrow-left' %></li>

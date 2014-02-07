@@ -1,7 +1,0 @@
-<% content_for :page_title do %>
-  <%= Spree.t(:new_stock_return) %>
-<% end %>
-
-<%= form_for [:admin, @order, @stock_return] do |f| %>
-  <%= button Spree.t('actions.create'), 'icon-ok' %>
-<% end %> 

@@ -14,8 +14,7 @@ describe 'StockReturn' do
     end
 
     it 'can create one successfully' do
-      click_link 'New Stock Return'
-      click_button 'Create'
+      click_button 'New Stock Return'
       expect(page).to have_content('Stock Return has been successfully created')
     end
 
