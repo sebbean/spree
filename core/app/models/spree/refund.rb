@@ -19,6 +19,8 @@ module Spree
           :currency => line_item.currency
         )
       end
+
+      self.total_price = items.map(&:price).sum
     end
   end
 end

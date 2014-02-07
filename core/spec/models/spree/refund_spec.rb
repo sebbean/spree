@@ -27,4 +27,9 @@ describe Spree::Refund do
     assert_refund_items(refund, 1, variant, order.currency)
   end
 
+  it 'sets the total price' do
+    refund = stock_return.refunds.create(:variant_id => variant.id, :quantity => 1)
+    expect(refund.total_price).to eq(order.find_line_item_by_variant(variant).price)
+  end
+
 end
