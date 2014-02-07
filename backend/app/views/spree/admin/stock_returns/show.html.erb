@@ -9,7 +9,7 @@
 <% end %>
 
 <div id='refunds'>
-  <%= form_tag do %>
+  <%= form_tag '', :'data-url' => spree.api_order_stock_return_refunds_path(@order, @stock_return) do %>
     <%= label_tag 'variant_id', Spree.t(:sku) %>
     <%= select_tag 'variant_id', options_from_collection_for_select(@order.variants, :id, :sku) %>
     <%= label_tag 'quantity', Spree.t(:quantity) %>
