@@ -13,7 +13,6 @@ describe Spree::Api::RefundsController do
   context "as a user" do
     it "cannot create a refund" do
       api_post :create, order_id: order.number, stock_return_id: stock_return.id
-      binding.pry
       response.status.should == 401
     end
   end
@@ -22,7 +21,13 @@ describe Spree::Api::RefundsController do
     sign_in_as_admin!
 
     it "can create a refund" do
-      api_post :create, order_id: order.number, stock_return_id: stock_return.id
+      api_post :create,
+        order_id: order.number,
+        stock_return_id: stock_return.id,
+        refund: { 
+          variant_id: order.variants.first.id,
+          quantity: 1
+        }
       response.should be_success
     end
   end
