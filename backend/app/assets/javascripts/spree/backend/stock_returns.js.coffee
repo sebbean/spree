@@ -1,5 +1,8 @@
 $(document).ready ->
-  $('#refunds form').submit ->
+  $('#variant_id').select2
+    width: '80%'
+
+  $('#new_refund form').submit ->
     form = $(this)
     $.post(form.data('url'),
       {
@@ -9,5 +12,5 @@ $(document).ready ->
         }
       } 
     ).done (response) ->
-      #comment
+      window.location.reload();
     false

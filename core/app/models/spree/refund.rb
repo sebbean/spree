@@ -7,6 +7,10 @@ module Spree
 
     before_create :create_items
 
+    def display_total_price
+      Spree::Money.new(total_price, :currency => items.first.currency)
+    end
+
     private
 
     def create_items
