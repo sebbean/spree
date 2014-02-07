@@ -5,8 +5,7 @@
 <% end %>
 
 <% content_for :page_title do %>
-  <i class="icon-arrow-right"></i> <%= Spree.t(:stock_returns) %>
-  <i class="icon-arrow-right"></i> <%= @stock_return.id %>
+  <i class="icon-arrow-right"></i> <%= Spree.t(:stock_return) %> #<%= @stock_return.id %>
 <% end %>
 
 <div id='refunds'>
