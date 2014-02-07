@@ -58,6 +58,10 @@ Spree::Core::Engine.add_routes do
           put :remove
         end
       end
+
+      resources :stock_returns do
+        resources :refunds
+      end
     end
 
     resources :zones
