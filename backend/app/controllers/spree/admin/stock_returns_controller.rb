@@ -20,7 +20,7 @@ module Spree
         @stock_return = @order.stock_returns.build(params[:stock_return])
         @stock_return.save
         flash[:success] = Spree.t(:successfully_created, :resource => Spree.t(:stock_return))
-        redirect_to admin_order_stock_returns_url(@order)
+        redirect_to admin_order_stock_return_url(@order, @stock_return)
       end
 
       private
