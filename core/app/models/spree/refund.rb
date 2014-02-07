@@ -12,7 +12,7 @@ module Spree
 
     def create_items
       variant = Spree::Variant.find(variant_id)
-      quantity.times do
+      quantity.to_i.times do
         line_item = stock_return.order.find_line_item_by_variant(variant)
         items.create(:variant_id => variant_id, :price => line_item.price)
       end

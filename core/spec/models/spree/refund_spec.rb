@@ -19,4 +19,11 @@ describe Spree::Refund do
     expect(refund.items.first.variant).to eq(variant)
   end
 
+  it 'creates refund items with a string quantity' do
+    variant = order.variants.first
+    refund = stock_return.refunds.create(:variant_id => variant.id, :quantity => '1')
+    expect(refund.items.count).to eq(1)
+    expect(refund.items.first.variant).to eq(variant)
+  end
+
 end
