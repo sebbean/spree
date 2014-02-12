@@ -363,7 +363,7 @@ en:
     attachment_path: Attachments Path
     attachment_styles: Paperclip Styles
     attachment_url: Attachments URL
-    authorization_failure: Authorization Failure
+    authorization_failure: "We're sorry, it looks like you don't have access to that page."
     auto_capture: Auto Capture
     available_on: Available On
     avs_response: AVS Response
@@ -1097,6 +1097,7 @@ en:
     tree: Tree
     type: Type
     type_to_search: Type to search
+    unauthorized: Unauthorized
     unable_to_connect_to_gateway: Unable to connect to gateway.
     under_price: Under %{price}
     unlock: Unlock

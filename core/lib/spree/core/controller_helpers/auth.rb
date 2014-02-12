@@ -21,20 +21,17 @@ module Spree
         # Override this method in your controllers if you want to have special behavior in case the user is not authorized
         # to access the requested action.  For example, a popup window might simply close itself.
         def unauthorized
+          capture_return_to_path
+
           if try_spree_current_user
             flash[:error] = Spree.t(:authorization_failure)
-            redirect_to '/unauthorized'
+            redirect_back_or_default
           else
-            store_location
-            if respond_to?(:spree_login_path)
-              redirect_to spree_login_path
-            else
-              redirect_to spree.respond_to?(:root_path) ? spree.root_path : root_path
-            end
+            redirect_back_or_default fallback_login_path
           end
         end
 
-        def store_location
+        def capture_return_to_path
           # disallow return to login, logout, signup pages
           authentication_routes = [:spree_signup_path, :spree_login_path, :spree_logout_path]
           disallowed_urls = []
@@ -56,9 +53,17 @@ module Spree
           respond_to?(:spree_current_user) ? spree_current_user : nil
         end
 
-        def redirect_back_or_default(default)
-          redirect_to(session["spree_user_return_to"] || default)
-          session["spree_user_return_to"] = nil
+        def redirect_back_or_default(default='/unauthorized')
+          redirect_to(session.delete("spree_user_return_to") || default)
+        end
+
+        private
+        def fallback_login_path
+          if respond_to?(:spree_login_path)
+            spree_login_path
+          else
+            (spree.respond_to?(:root_path) ? spree.root_path : root_path)
+          end
         end
       end
     end
