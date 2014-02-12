@@ -1,0 +1,8 @@
+<h2>Unauthorized</h2>
+<% if @spree_current_user %>
+  We're sorry, it looks like you don't have access to that page.
+<% else %>
+  <p>
+    Sorry, but we can't show you this page until you <a href="<%= login_path %>">log in</a>.
+  </p>
+<% end %>
