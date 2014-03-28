@@ -44,8 +44,8 @@ Spree::Order.class_eval do
     end
   end
 
-  def create_shipments_from_api(shipments_hash)
-    shipments_hash.each do |s|
+  def create_shipments_from_api(new_shipments)
+    new_shipments.each do |s|
       begin
         shipment = shipments.build
         shipment.tracking = s[:tracking]
@@ -71,8 +71,8 @@ Spree::Order.class_eval do
     end
   end
 
-  def create_payments_from_api(payments_hash)
-    payments_hash.each do |p|
+  def create_payments_from_api(new_payments)
+    new_payments.each do |p|
       begin
         payment = payments.build
         payment.amount = p[:amount].to_f
@@ -103,11 +103,11 @@ Spree::Order.class_eval do
     end
   end
 
-  def create_adjustments_from_api(adjustments)
-    adjustments.each do |a|
+  def create_adjustments_from_api(new_adjustments)
+    new_adjustments.each do |a|
       begin
-        adjustment = self.adjustments.build(:amount => a['amount'].to_f,
-                                            :label => a['label'])
+        adjustment = adjustments.build(:amount => a['amount'].to_f,
+                                       :label => a['label'])
         adjustment.locked = true
         adjustment.save!
       rescue Exception => e
