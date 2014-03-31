@@ -1,0 +1,77 @@
+<script type='text/template' id='shipment_template'>
+  <%% can_update = shipment.get('permissions').can_update %>
+  <div id="shipment_<%%= shipment.get('id') %>" class='shipment' data-shipment-number="<%%= shipment.get('number') %>">
+    <fieldset class="no-border-bottom">
+      <legend align="center" class="stock-location" data-hook="stock-location">
+        <span class="shipment-number"><%%= shipment.get('number') %></span>
+        -
+        <span class="shipment-state"><%%= Spree.translations.shipment_states[shipment.get('state')] %></span>
+        <%= Spree.t(:package_from) %>
+        <strong class="stock-location-name" data-hook="stock-location-name">'<%%= shipment.get('stock_location_name') %>'</strong>
+        <%% if (shipment.isReady() && can_update) { %>
+          <a href='#' class='ship button icon-arrow-right'><%= Spree.t(:ship) %></a>
+        <%% } %>
+      </legend>
+    </fieldset>
+
+    <table class="stock-contents index" data-hook="stock-contents">
+      <colgroup>
+        <col style="width: 10%;" />
+        <col style="width: 30%;" />
+        <col style="width: 15%;" />
+        <col style="width: 15%;" />
+        <col style="width: 15%;" />
+        <col style="width: 15%;" />
+      </colgroup>
+
+      <thead>
+        <th colspan="2"><%= Spree.t(:item_description) %></th>
+        <th><%= Spree.t(:price) %></th>
+        <th><%= Spree.t(:quantity) %></th>
+        <th><%= Spree.t(:total) %></th>
+        <th class="orders-actions actions" data-hook="admin_order_form_line_items_header_actions"></th>
+      </thead>
+
+      <tbody>
+      <%% _.each(shipment.get('manifest'), function(item) { %>
+        <tr class="stock-item" data-item-quantity="<%%= item.quantity %>">
+          <td class="item-image">
+            <img src='<%%= shipment.imageForVariant(item.variant_id) %>'>
+          </td>
+          <td class="item-name">
+            <%% item.variant = shipment.findVariant(item.variant_id) %>
+            <%% item.line_item = shipment.findLineItem(item.variant_id) %>
+            <%%= item.variant.name %><br>
+            <%% if (item.variant.options_text.length > 0) { %>
+              (<%%= item.variant.options_text %>)
+            <%% } %>
+            <%% if (item.variant.sku.length > 0) { %>
+              <strong><%= Spree.t(:sku) %>:</strong> <%%= item.variant.sku %>
+            <%% } %>
+          </td>
+          <td class="item-price align-center"><%%= item.line_item.single_display_amount %></td>
+          <td class="item-qty-show align-center">
+            <%% _.each(item.states, function(count, state) { %>
+              <%%= count %> x <%%= Spree.translations[state] %>
+            <%% }) %>
+          </td>
+          <td class="item-qty-edit hidden">
+            <input type='number' id='quantity' min='0' class='line_item_quantity' size='5' value='<%%= item.quantity %>'>
+          </td>
+          <td class="item-total align-center"><%%= item.price %></td>
+          <td class="cart-item-delete actions" data-hook="cart_item_delete">
+            <%% if (can_update) { %>
+              <a href='#' class="save-item icon_link icon-ok no-text with-tip" data-variant-id='<%%= item.variant.id %>' data-action='save' title='<%= Spree.t('actions.save') %>' style='display:none'></a>
+              <a href='#' class="cancel-item icon_link icon-cancel no-text with-tip" data-action="cancel" title='<%= Spree.t('actions.cancel') %>' style='display:none'></a>
+              <a href='#' class='edit-item icon_link icon-edit no-text with-tip' data-action="edit" title='<%= Spree.t('edit') %>'></a>
+              <a href='#' class='split-item icon_link icon-resize-horizontal no-text with-tip' data-variant-id='<%%= item.variant.id %>' data-action='split' title='<%= Spree.t('split') %>'></a>
+              <a href='#' class='delete-item icon-trash no-text with-tip' data-variant-id='<%%= item.variant.id %>' data-action='remove' title='<%= Spree.t('delete') %>'></a>
+            <%% } %>
+          </td>
+        </tr>
+      <%% }) %>
+      </tbody>
+    </table>
+
+  </div>
+</script>

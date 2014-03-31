@@ -1,0 +1,27 @@
+<script type='text/template' id='edit_order_template'>
+  <div class='shipments'>
+  </div>
+
+<%#= render :partial => "spree/admin/orders/adjustments", :locals => {
+      :adjustments => @order.line_item_adjustments, 
+      :order => order,
+      :title => Spree.t(:line_item_adjustments)
+ } %>
+<%#= render :partial => "spree/admin/orders/adjustments", :locals => {
+      :adjustments => @order.shipment_adjustments, 
+      :order => order,
+      :title => Spree.t(:shipment_adjustments)
+ } %>
+<%#= render :partial => "spree/admin/orders/adjustments", :locals => {
+      :adjustments => @order.adjustments, 
+      :order => order,
+      :title => Spree.t(:order_adjustments)
+ } %>
+
+ <%% if (order.get('line_items').length > 0) { %>
+  <fieldset class="no-border-bottom" id="order-total" data-hook="order_details_total">
+    <legend><%= Spree.t(:order_total) %></legend>
+    <span class="order-total"><%%= order.get('display_total') %></span>
+  </fieldset>
+<%% } %>
+</script>

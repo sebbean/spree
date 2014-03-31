@@ -604,6 +604,7 @@ en:
     free_shipping: Free Shipping
     free_shipping_amount: "-"
     front_end: Front End
+    from_location: From location
     gateway: Gateway
     gateway_config_unavailable: Gateway unavailable for environment
     gateway_error: Gateway Error

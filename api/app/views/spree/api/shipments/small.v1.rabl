@@ -30,4 +30,10 @@ child :manifest => :manifest do
   end
   node(:quantity) { |m| m.quantity }
   node(:states) { |m| m.states }
+  node(:price) { |m| m.price } 
+end
+
+# Necessary for backend's order interface
+node :permissions do
+  { can_update: current_ability.can?(:update, root_object) }
 end
