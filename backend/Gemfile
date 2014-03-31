@@ -3,4 +3,7 @@ eval(File.read(File.dirname(__FILE__) + '/../common_spree_dependencies.rb'))
 gem 'spree_core', :path => '../core'
 gem 'spree_api', :path => '../api'
 
+gem 'ember-rails', github: 'emberjs/ember-rails'
+gem 'ember-source'
+
 gemspec

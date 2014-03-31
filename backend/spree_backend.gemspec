@@ -24,6 +24,9 @@ Gem::Specification.new do |s|
   s.add_dependency 'jquery-rails', '~> 3.1.0'
   s.add_dependency 'jquery-ui-rails', '~> 4.1.0'
   s.add_dependency 'select2-rails', '~> 3.4.7'
+  s.add_dependency 'momentjs-rails', '2.5.1'
+  s.add_dependency 'i18n-js', '2.1.2'
 
   s.add_development_dependency 'email_spec', '~> 1.2.1'
+  s.add_development_dependency 'teaspoon'
 end

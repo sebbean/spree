@@ -1,0 +1,1 @@
+Backend.OrderStateRoute = Backend.OrderRoute.extend({})

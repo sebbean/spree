@@ -62,3 +62,28 @@
   color: #FFF;
   font-size: 2em;
 }
+
+.shipment, .line_item {
+  .item-qty-show img, .item-total img {
+    border: 0
+  }
+}
+
+#states {
+  margin: 1.5em;
+
+  span {
+    text-transform: uppercase;
+    margin-right: 2.5em;
+    padding: 1em;
+  }
+
+  span.active {
+    background-color: $color-3;
+    font-weight: bold;
+    a {
+      color: white;
+    }
+  }
+}
+

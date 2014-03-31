@@ -1,0 +1,1 @@
+Backend.Variant = Ember.Object.extend({})

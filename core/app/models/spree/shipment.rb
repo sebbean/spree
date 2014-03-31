@@ -179,7 +179,7 @@ module Spree
       !shipped?
     end
 
-    ManifestItem = Struct.new(:line_item, :variant, :quantity, :states)
+    ManifestItem = Struct.new(:line_item, :variant, :quantity, :states, :price)
 
     def manifest
       # Grouping by the ID means that we don't have to call out to the association accessor
@@ -192,7 +192,9 @@ module Spree
 
           line_item = units.first.line_item
           variant = units.first.variant
-          ManifestItem.new(line_item, variant, units.length, states)
+          quantity = units.length
+          price = Spree::Money.new(line_item.price * quantity, { currency: line_item.currency })
+          ManifestItem.new(line_item, variant, quantity, states, price)
         end
       end.flatten
     end

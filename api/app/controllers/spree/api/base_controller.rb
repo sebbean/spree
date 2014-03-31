@@ -101,6 +101,7 @@ module Spree
       def current_ability
         Spree::Ability.new(current_api_user)
       end
+      helper_method :current_ability
 
       def current_currency
         Spree::Config[:currency]
