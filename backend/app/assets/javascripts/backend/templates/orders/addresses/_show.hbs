@@ -1,0 +1,32 @@
+<dl>
+  <dt>{{i18n 'address.full_name'}}</dt>
+  <dd>{{address.full_name}}</dd>
+
+  <dt>{{i18n 'address.address1'}}</dt>
+  <dd>{{address.address1}}</dd>
+
+  {{#if address.address2}}
+    <dt>{{i18n 'address.address2'}}</dt>
+    <dd>{{address.address2}}</dd>
+  {{/if}}
+
+  {{#if address.company}}
+    <dt>{{i18n 'address.company'}}</dt>
+    <dd>{{address.company}}</dd>
+  {{/if}}
+
+  <dt>{{i18n 'address.city'}}</dt>
+  <dd>{{address.city}}</dd>
+
+  <dt>{{i18n 'address.zipcode'}}</dt>
+  <dd>{{address.zipcode}}</dd>
+
+  <dt>{{i18n 'address.country'}}</dt>
+  <dd>{{address.country.name}}</dd>
+
+  <dt>{{i18n 'address.state'}}</dt>
+  <dd>{{address.state_text}}</dd>
+
+  <dt>{{i18n 'address.phone'}}</dt>
+  <dd>{{address.phone}}</dd>
+</dl>  

@@ -604,6 +604,7 @@ en:
     free_shipping: Free Shipping
     free_shipping_amount: "-"
     front_end: Front End
+    from_location: From location
     gateway: Gateway
     gateway_config_unavailable: Gateway unavailable for environment
     gateway_error: Gateway Error
@@ -647,6 +648,11 @@ en:
     inventory: Inventory
     inventory_adjustment: Inventory Adjustment
     inventory_error_flash_for_insufficient_quantity: An item in your cart has become unavailable.
+    inventory_states:
+      on_hand: on hand
+      backordered: backordered
+      shipped: shipped
+      returned: returned
     is_not_available_to_shipment_address: is not available to shipment address
     iso_name: Iso Name
     item: Item
@@ -738,6 +744,7 @@ en:
     new_zone: New Zone
     next: Next
     no_actions_added: No actions added
+    no_inventory_tracked: No inventory tracked
     no_orders_found: No orders found
     no_payment_methods_found: No payment methods found
     no_pending_payments: No pending payments
@@ -1158,3 +1165,6 @@ en:
     zipcode: Zip Code
     zone: Zone
     zones: Zones
+  time:
+    formats:
+      moment: 'MMMM Do YYYY, h:mm a'

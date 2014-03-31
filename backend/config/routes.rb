@@ -69,6 +69,10 @@ Spree::Core::Engine.add_routes do
       end
     end
 
+    # To make ember happy
+    get '/orders/:number', :to => "orders#index"
+    get 'orders/:id/:state', :to => "orders#show"
+
     resources :orders, :except => [:show] do
       member do
         post :resend
@@ -79,10 +83,7 @@ Spree::Core::Engine.add_routes do
         put :resume
       end
 
-      resource :customer, :controller => "orders/customer_details"
-
       resources :adjustments
-      resources :line_items
       resources :return_authorizations do
         member do
           put :fire

@@ -19,9 +19,8 @@
 //= require responsive-tables
 //= require spree
 //= require spree/backend/spree-select2
+//= require backend/application
 //= require_tree .
-
-
 Spree.routes.user_search = Spree.pathFor('admin/search/users')
 Spree.routes.taxons_search = Spree.pathFor('api/taxons')
 Spree.routes.product_search = Spree.pathFor('api/products')
@@ -41,4 +40,3 @@ Spree.routes.payments_api = function(order_id) {
 Spree.routes.stock_items_api = function(stock_location_id) {
   return Spree.pathFor('api/stock_locations/' + stock_location_id + '/stock_items')
 }
-

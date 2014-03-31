@@ -29,4 +29,5 @@ child :manifest => :manifest do
   end
   node(:quantity) { |m| m.quantity }
   node(:states) { |m| m.states }
+  node(:price) { |m| m.price } 
 end
