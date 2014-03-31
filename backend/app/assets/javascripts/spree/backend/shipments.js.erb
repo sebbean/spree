@@ -248,16 +248,6 @@ completeItemSplit = function(event) {
   }
 }
 
-advanceOrder = function() {
-  $.ajax({
-    type: "PUT",
-    async: false,
-    url: Spree.url(Spree.routes.checkouts_api + "/" + order_number + "/advance")
-  }).done(function() {
-    window.location.reload();
-  });
-}
-
 cancelItemSplit = function(event) {
   event.preventDefault();
   var link = $(this);
