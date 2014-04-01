@@ -84,7 +84,6 @@ $ ->
 
       # I'd prefer if this was done with Backbone's collections, but I don't know how.
       shipments = order.get('shipments')
-      debugger
       if shipments.length > 0
         _.each order.get('shipments'), (shipment_attrs) ->
           shipment_attrs.order = order
