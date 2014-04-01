@@ -1,5 +1,8 @@
-#= require spree/backend/line_items/show
+#= require underscore
+#= require backbone
+#= require moment
 #= require spree/backend/shipments/show
+#= require spree/backend/line_items/show
 
 $ ->
 
@@ -178,12 +181,6 @@ $ ->
   Spree.Admin.OrderStateViews.Payment = Backbone.View.extend({})
   Spree.Admin.OrderStateViews.Confirmation = Backbone.View.extend({})
 
-
-  Spree.Admin.OrderCustomerView = Backbone.View.extend
-    el: '#order'
-    render: -> 
-      customer_template = _.template($('#customer_details_template').html(), { order: order })
-      this.$el.html(customer_template)
 
   Spree.Admin.OrderRouter = Backbone.Router.extend
     routes:
