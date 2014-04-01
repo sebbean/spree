@@ -1,6 +1,4 @@
-#= require underscore
-#= require backbone
-#= require moment
+#= require spree/backend/line_items/show
 #= require spree/backend/shipments/show
 #= require spree/backend/line_items/show
 
