@@ -2,13 +2,13 @@
   <ul data-hook="admin_order_tabs">
     <% if can? :update, @order %>
       <li<%== ' class="active"' if current == 'Order Details' %>>
-        <%= link_to_with_icon 'icon-edit', Spree.t(:order_details), edit_admin_order_url(@order) %>
+        <a href="#/" class='icon-edit'><%= Spree.t(:order_details) %></a>
       </li>
     <% end %>
 
-    <% if can?(:update, @order) && checkout_steps.include?("address") %>
+    <% if can?(:update, @order) %>
       <li<%== ' class="active"' if current == 'Customer Details' %>>
-        <%= link_to_with_icon 'icon-user', Spree.t(:customer_details), admin_order_customer_url(@order) %>
+        <a href="#/customer" class='icon-user'><%= Spree.t(:customer_details) %></a>
       </li>
     <% end %>
 

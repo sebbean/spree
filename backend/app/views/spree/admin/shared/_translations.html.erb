@@ -3,11 +3,13 @@
   { :date_picker    => Spree.t(:js_format,
                               :scope => 'date_picker',
                               :default => 'yy/mm/dd'),
+    :moment_format  => I18n.t('time.formats.moment'),
     :abbr_day_names           => I18n.t(:abbr_day_names, :scope => :date),
     :add                      => Spree.t(:add),
     :are_you_sure_delete      => Spree.t(:are_you_sure_delete),
     :bill_address             => Spree.t(:bill_address),
     :backordered              => Spree.t(:backordered),
+    :backorders_allowed       => Spree.t(:backorders_allowed),
     :choose_a_customer        => Spree.t(:choose_a_customer),
     :confirm_delete           => Spree.t(:confirm_delete),
     :cut                      => Spree.t(:cut),
@@ -20,11 +22,14 @@
                                          :default => 0).to_i,
     :find_a_taxon             => Spree.t(:find_a_taxon),
     :item_stock_placeholder   => Spree.t(:choose_location),
+    :inventory_states         => Spree.t(:inventory_states),
     :loading                  => Spree.t(:loading),
     :month_names              => I18n.t(:month_names, :scope => :date).reject(&:blank?),
     :more                     => Spree.t(:more),
     :name                     => Spree.t(:name),
     :next                     => Spree.t(:next),
+    :no_shipping_method_selected => Spree.t(:no_shipping_method_selected),
+    :no_tracking_present      => Spree.t(:no_tracking_present),
     :no_results               => Spree.t(:no_results),
     :option_type_placeholder  => Spree.t(:option_type_placeholder),
     :on_hand                  => Spree.t(:on_hand),
@@ -47,4 +52,5 @@
 
 <% if I18n.locale != :en %>
   <%= javascript_include_tag "select2_locale_#{I18n.locale}" %>
+  <%= javascript_include_tag "moment/#{I18n.locale}" %>
 <% end %>

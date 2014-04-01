@@ -1,87 +1,15 @@
-//= require underscore
-//= require backbone
+#= require underscore
+#= require backbone
+#= require moment
+#= require spree/backend/shipments/show
 
 $ ->
 
   "use strict"
-  $("[data-hook=\"add_product_name\"]").find(".variant_autocomplete").variantAutocomplete()
-
-  Spree.Shipment = Backbone.Model.extend
-    isReady: ->
-      this.get('state') == 'ready'
-    url: ->
-      "/api/orders/#{this.get('order').get('number')}/shipments/#{this.get('number')}"
-
-    findVariant: (id) ->
-      variant = _.find this.get('order').variants(), (v) ->
-        v.id == id
-    imageForVariant: (id) ->
-      this.findVariant(id).images[0].mini_url
-
-    findLineItem: (variant_id) ->
-      line_item = _.find this.get('order').get('line_items'), (li) ->
-        li.variant_id == variant_id
-
-    adjustItems: (variant_id, quantity) ->
-      manifest_item = _.find this.get('manifest'), (item) ->
-        item.variant_id == variant_id
-      new_url = ""
-      new_quantity = 0
-      if manifest_item.quantity < quantity
-        new_url = this.url() + "/add"
-        new_quantity = (quantity - manifest_item.quantity)
-      else if manifest_item.quantity > quantity
-        new_url = this.url() + "/remove"
-        new_quantity = (manifest_item.quantity - quantity)
-      new_url += '.json'
-
-      if new_quantity != 0
-        shipment = this
-        $.ajax(
-          type: "PUT",
-          url: Spree.url(new_url),
-          data: { variant_id: variant_id, quantity: new_quantity }
-        )
-        this.get('order').advance()
 
 
-  Spree.Admin.ShipmentShow = Backbone.View.extend
-    className: "shipment"
-    tagName: "div"
-    render: ->
-      template = _.template($("#shipment_template").html(), { shipment: this.model })
-      this.$el.html(template)
-
-    events:
-      "click a.edit-item": "toggleItemEdit"
-      "click a.save-item": "saveItem"
-
-    toggleItemEdit: (e) ->
-      link = $(e.target)
-      link_parent = link.parent()
-      link_row = link.parents('tr')
-
-      link_parent.find('a.edit-item').toggle()
-      link_parent.find('a.cancel-item').toggle()
-      link_parent.find('a.split-item').toggle()
-      link_parent.find('a.save-item').toggle()
-      link_parent.find('a.delete-item').toggle()
-
-      link_row.find('td.item-qty-show').toggle()
-      link_row.find('td.item-qty-edit').toggle()
-
-      false
-
-    saveItem: (e) ->
-      link = $(e.target)
-      variant_id = link.data('variant-id')
-      quantity = parseInt(link.parents('tr').find('input.line_item_quantity').val())
-
-      this.toggleItemEdit(e)
-      this.model.adjustItems(variant_id, quantity)
-
-      false
-
+  Spree.Variant = Backbone.Model.extend
+    urlRoot: Spree.routes.variants_api
 
   Spree.Order = Backbone.Model.extend
     urlRoot: Spree.routes.checkouts_api
@@ -92,38 +20,115 @@ $ ->
         line_item.variant
 
     advance: ->
+      order = this
       $.ajax
         type: "PUT",
         url: this.url() + "/advance"
+      .done (order_attrs) -> 
+        order.set(order_attrs)
 
-  Spree.Admin.OrderForm = Backbone.View.extend
+  Spree.Admin.AddProductView = Backbone.View.extend
+    el: '#add-line-item'
+
+    events:
+      "change #add_variant_id": "showStockDetails"
+      "click .add_variant": "addVariant"
+
+    render: ->
+      # This element is static, but is contained within this view as we have some events we want triggered
+      # I'd rather not have this element rendered each time the order is rendered.
+      this.$el.find("#add_variant_id").variantAutocomplete()
+
+    showStockDetails: (e) ->
+      variant_id = $(e.target).val();
+      variant = new Spree.Variant(id: variant_id)
+      variant.fetch
+        success: (variant) ->
+          $('#stock_details').html(_.template($("#variant_autocomplete_stock_template").html(), {variant: variant}));
+          $('#stock_details').data('variant_id', variant.id)
+          $('#stock_details').show();
+
+    addVariant: (e) ->
+      button = $(e.target)
+      $('#stock_details').hide()
+
+      item_row = button.closest('tr')
+      variant_id = $('#stock_details').data('variant_id')
+      stock_location_id = item_row.data('stock-location-id')
+      quantity = item_row.find(".quantity").val()
+      order = this.model
+
+      $.ajax
+        type: "POST"
+        url: this.model.url() + "/line_items.json"
+        data:
+          line_item:
+            variant_id: variant_id
+            quantity: quantity
+      .done (msg) ->
+        order.advance()
+      .error (msg) ->
+        console.error(msg)
+
+  Spree.Admin.OrderView = Backbone.View.extend
     initialize: ->
       this.model.on('change', this.render, this)
 
-    el: '#order-form',
+    el: '#order',
+
     render: ->
       el = this.$el
       order = this.model
+      el.find(".spinner").hide()
+
       edit_order_template = _.template($("#edit_order_template").html(), { order: order })
       el.html(edit_order_template)
-      _.each order.get('shipments'), (shipment_attrs) ->
-        shipment_attrs.order = order
-        shipment = new Spree.Shipment(shipment_attrs)
-        shipment_view = new Spree.Admin.ShipmentShow({ model: shipment, id: "shipment_#{shipment.get('id')}" })
-        el.find('.shipments').append(shipment_view.$el)
-        shipment_view.render()
 
+      # I'd prefer if this was done with Backbone's collections, but I don't know how.
+      shipments = order.get('shipments')
+      if shipments.length > 0
+        _.each order.get('shipments'), (shipment_attrs) ->
+          shipment_attrs.order = order
+          shipment = new Spree.Shipment(shipment_attrs)
+          shipment_view = new Spree.Admin.ShipmentShow({ model: shipment, id: "shipment_#{shipment.id}" })
+          el.find('.shipments').append(shipment_view.$el)
+          shipment_view.render()
+
+
+      # Ensure that the tooltips display for all elements that should have them
+      Spree.Admin.tipMe()
+      sidebar_template = _.template($('#order_sidebar_template').html(), { order: order })
+
+      # This breaks with Backbone conventions, as it is touching an el outside this view's el
+      # I think it's OK though because it's related info
+      $('#order_information').html(sidebar_template)
+
+
+  Spree.Admin.OrderCustomerView = Backbone.View.extend
+    el: '#order'
+    render: -> 
+      this.$el.html('Customer view goes here')
 
   Spree.Admin.OrderRouter = Backbone.Router.extend
     routes:
-      '': 'show'
+      '': 'show',
+      'customer': 'customer'
+
 
   router = new Spree.Admin.OrderRouter
-  router.on 'route:show', ->
-    order = new Spree.Order(number: order_number)
-    order.fetch
-      success: (order) ->
-        orderForm = new Spree.Admin.OrderForm(model: order)
-        orderForm.render()
 
-  Backbone.history.start()
+  router.on 'route:show', ->
+    Spree.Admin.currentOrder.fetch
+      success: (order) ->
+        addProductView = new Spree.Admin.AddProductView(model: order)
+        addProductView.render()
+        orderView = new Spree.Admin.OrderView(model: order)
+        orderView.render()
+
+  router.on 'route:customer', ->
+    customerView = new Spree.Admin.OrderCustomerView(model: order)
+    customerView.render()
+
+  if order_number?
+    Spree.Admin.currentOrder = new Spree.Order(number: order_number)
+    Backbone.history.start()

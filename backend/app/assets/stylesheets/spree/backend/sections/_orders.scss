@@ -62,3 +62,9 @@
   color: #FFF;
   font-size: 2em;
 }
+
+.shipment {
+  .item-qty-show img, .item-total img {
+    border: 0
+  }
+}

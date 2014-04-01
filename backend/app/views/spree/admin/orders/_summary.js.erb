@@ -1,0 +1,36 @@
+<script type='text/template' id='order_sidebar_template'>
+  <%# Realistically, this template should be shareable between server and client %>
+  <%# I just don't know how to do that properly, given all the custom methods for translations and currency work %>
+  <br>
+  <h5 class="sidebar-title">
+    <span><%= Spree.t(:order_information) %></span>
+  </h5>
+
+  <dl class="additional-info" id="order_tab_summary">
+    <dt id="order_status" data-hook="" style="height: 42px;"><%= Spree.t(:state) %>:</dt>
+    <%% state = order.get('state').toLowerCase() %>
+    <dd style="height: 42px;"><span class="state <%%= state %>"><%%= state.replace('_', ' ') %></span></dd>
+    <dt data-hook="" style="height: 42px;"><%= Spree.t(:subtotal) %>:</dt>
+    <dd id="item_total" style="height: 42px;"><%%= order.get('display_item_total') %></dd>
+    <dt data-hook="" style="height: 42px;"><%= Spree.t(:ship_total) %>:</dt>
+    <dd id="ship_total" style="height: 42px;"><%%= order.get('display_ship_total') %></dd>
+    <dt data-hook="" style="height: 42px;"><%= Spree.t(:tax) %>:</dt>
+    <dd id="tax_total" style="height: 42px;"><%%= order.get('display_tax_total') %></dd>
+    <dt data-hook="" style="height: 42px;"><%= Spree.t(:total) %>:</dt>
+    <dd id="order_total" style="height: 42px;"><%%= order.get('display_total') %></dd>
+    <%% shipment_state = order.get('shipment_state') %>
+    <%% if (shipment_state) { %>
+      <dt style="height: 42px;"><%= Spree.t(:shipment) %>:</dt>
+      <dd id="shipment_status" style="height: 42px;"><span class="state <%%= shipment_state %>"><%%= shipment_state.toLowerCase().replace('_', ' ') %></span></dd>
+    <%% } %>
+    <%% payment_state = order.get('payment_state') %>
+    <%% if (payment_state) { %>
+      <dt style="height: 42px;"><%= Spree.t(:payment) %>:</dt>
+      <dd id="payment_status" style="height: 42px;"><span class="state <%%= payment_state %>"><%%= payment_state.toLowerCase().replace('_', ' ') %></span></dd>
+    <%% } %>
+    <%% if (order.get('completed_at')) { %>
+      <dt data-hook="" style="height: 42px;"><%= Spree.t(:date_completed) %>:</dt>
+      <dd id="date_complete" style="height: 42px;"><%%= moment(order.get('completed_at')).format(Spree.translations.moment_format) %></dd>
+    <%% } %>
+  </dl>
+</script>

@@ -32,6 +32,7 @@ module Spree
       end
     end
 
+
     # This was refactored from a simpler query because the previous implementation
     # lead to issues once users tried to modify the objects returned. That's due
     # to ActiveRecord `joins(shipment: :stock_location)` only return readonly
