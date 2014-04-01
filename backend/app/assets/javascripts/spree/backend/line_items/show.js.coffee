@@ -22,6 +22,7 @@ Spree.Admin.LineItemShow = Backbone.View.extend
     "click a.edit" : "toggleEdit"
     "click a.cancel": "toggleEdit"
     "click a.save": "save"
+    "click a.delete": "delete"
 
   toggleEdit: (e) ->
     e.preventDefault()
@@ -50,13 +51,15 @@ Spree.Admin.LineItemShow = Backbone.View.extend
 
   delete: (e) ->
     view = this
+    line_item = view.model
     e.preventDefault()
     if confirm(Spree.translations.are_you_sure_delete)
-      toggleItemEdit()
+      this.toggleEdit(e)
       $.ajax
         type: "DELETE"
-        url: Spree.url(url)
+        url: Spree.url(line_item.url())
       .done (msg) ->
         view.remove()
+        line_item.advanceOrder()
         if $('.line-items tr.line-item').length == 0
           $('.line-items').hide()
