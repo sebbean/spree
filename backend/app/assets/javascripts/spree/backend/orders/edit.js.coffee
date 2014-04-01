@@ -1,6 +1,4 @@
-#= require underscore
-#= require backbone
-#= require moment
+#= require spree/backend/line_items/show
 #= require spree/backend/shipments/show
 
 $ ->
@@ -86,6 +84,7 @@ $ ->
 
       # I'd prefer if this was done with Backbone's collections, but I don't know how.
       shipments = order.get('shipments')
+      debugger
       if shipments.length > 0
         _.each order.get('shipments'), (shipment_attrs) ->
           shipment_attrs.order = order
@@ -93,6 +92,16 @@ $ ->
           shipment_view = new Spree.Admin.ShipmentShow({ model: shipment, id: "shipment_#{shipment.id}" })
           el.find('.shipments').append(shipment_view.$el)
           shipment_view.render()
+      else
+        # There aren't any shipments, so render line items instead
+        # This may happen if the order is in a pre-delivery state, or if the order never goes through the delivery state
+        $('.line-items').show()
+        _.each order.get('line_items'), (line_item_attrs) ->
+          line_item_attrs.order = order
+          line_item = new Spree.LineItem(line_item_attrs)
+          line_item_view = new Spree.Admin.LineItemShow({ model: line_item, id: "line_item_#{line_item.id}"})
+          el.find('.line-items tbody').append(line_item_view.$el)
+          line_item_view.render()
 
 
       # Ensure that the tooltips display for all elements that should have them

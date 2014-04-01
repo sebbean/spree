@@ -520,6 +520,10 @@ module Spree
       (bill_address.empty? && ship_address.empty?) || bill_address.same_as?(ship_address)
     end
 
+    def has_valid_shipping_address_info?
+      ship_address.present?
+    end
+
     def set_shipments_cost
       shipments.each(&:update_amounts)
       updater.update_shipment_total

@@ -2,8 +2,25 @@
   <div class='shipments'>
   </div>
   
-  <div class='line_items'>
-  </div>
+  <table id='line-items' class="line-items index hidden" data-hook="line-items">
+    <colgroup>
+      <col style="width: 10%;" />
+      <col style="width: 40%;" />
+      <col style="width: 10%;" />
+      <col style="width: 10%;" />
+    </colgroup>
+
+    <thead>
+      <th colspan="2"><%= Spree.t(:name) %></th>
+      <th><%= Spree.t(:price) %></th>
+      <th><%= Spree.t(:quantity) %></th>
+      <th><%= Spree.t(:total_price) %></th>
+      <th class="orders-actions actions" data-hook="admin_order_form_line_items_header_actions">&nbsp;</th>
+    </thead>
+
+    <tbody>
+    </tbody>
+  </table>
 
 <%#= render :partial => "spree/admin/orders/adjustments", :locals => {
       :adjustments => @order.line_item_adjustments, 
