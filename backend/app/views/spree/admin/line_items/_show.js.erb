@@ -1,6 +1,6 @@
 <script type='text/template' id='line_item_template'>
-  <td class="line-item-image"><img src='<%%= line_item.variant().images[0].mini_url %>'></td>
-  <td class="line-item-name">
+  <td class="item-image"><img src='<%%= line_item.variant().images[0].mini_url %>'></td>
+  <td class="item-name">
     <%%= line_item.variant().name %>
     <%% options_text = line_item.variant().options_text %>
     <%% if (options_text.length > 0) { %>
@@ -10,14 +10,14 @@
       <br><strong><%= Spree.t(:sku) %></strong>: <%%= line_item.variant().sku %>
     <%% } %>
   </td>
-  <td class="line-item-price align-center"><%%= line_item.get('single_display_amount') %></td>
-  <td class="line-item-qty-show align-center">
+  <td class="item-price align-center"><%%= line_item.get('single_display_amount') %></td>
+  <td class="item-qty-show align-center">
     <%%= line_item.get('quantity') %>
   </td>
-  <td class="line-item-qty-edit hidden">
+  <td class="item-qty-edit hidden">
     <input type='number' value='<%%= line_item.get('quantity') %>' min='0' class='line_item_quantity' size='5'>
   </td>
-  <td class="line-item-total align-center"><%%= line_item.get('display_amount') %></td>
+  <td class="item-total align-center"><%%= line_item.get('display_amount') %></td>
   <td class="actions" data-hook="cart_line_item_actions">
     <a href='#' class='save icon_link icon-ok no-text with-tip' title='<%= Spree.t('actions.save') %>' style='display:none'></a>
     <a href='#' class='cancel icon_link icon-cancel no-text with-tip' title='<%= Spree.t('actions.cancel') %>' style='display:none'></a>

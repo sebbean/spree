@@ -30,13 +30,14 @@ Spree.Admin.LineItemShow = Backbone.View.extend
     el.find("a.cancel").toggle()
     el.find("a.save").toggle()
     el.find("a.delete").toggle()
-    el.find("td.line-item-qty-show").toggle()
-    el.find("td.line-item-qty-edit").toggle()
+    el.find("td.item-qty-show").toggle()
+    el.find("td.item-qty-edit").toggle()
 
   save: (e) ->
     e.preventDefault()
     quantity = parseInt(this.$el.find("input.line_item_quantity").val())
     this.toggleEdit(e)
+    this.$el.find("td.item-qty-show, td.item-total").html("<div align='center'><img src='/assets/spinner.gif'></div>")
     line_item = this.model
     $.ajax
       type: "PUT",

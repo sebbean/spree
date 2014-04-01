@@ -95,13 +95,15 @@ $ ->
       else
         # There aren't any shipments, so render line items instead
         # This may happen if the order is in a pre-delivery state, or if the order never goes through the delivery state
-        $('.line-items').show()
-        _.each order.get('line_items'), (line_item_attrs) ->
-          line_item_attrs.order = order
-          line_item = new Spree.LineItem(line_item_attrs)
-          line_item_view = new Spree.Admin.LineItemShow({ model: line_item, id: "line_item_#{line_item.id}"})
-          el.find('.line-items tbody').append(line_item_view.$el)
-          line_item_view.render()
+        line_items = order.get('line_items')
+        if line_items.length > 0
+          $('.line-items').show()
+          _.each line_items, (line_item_attrs) ->
+            line_item_attrs.order = order
+            line_item = new Spree.LineItem(line_item_attrs)
+            line_item_view = new Spree.Admin.LineItemShow({ model: line_item, id: "line_item_#{line_item.id}"})
+            el.find('.line-items tbody').append(line_item_view.$el)
+            line_item_view.render()
 
 
       # Ensure that the tooltips display for all elements that should have them

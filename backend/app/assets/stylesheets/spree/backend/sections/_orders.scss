@@ -63,8 +63,9 @@
   font-size: 2em;
 }
 
-.shipment {
+.shipment, .line_item {
   .item-qty-show img, .item-total img {
     border: 0
   }
 }
+
