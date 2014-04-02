@@ -18,12 +18,13 @@
 
 <%= render "add_product" %>
 
-<div data-hook="admin_order_form_fields" id='order'>
+<div data-hook="admin_order_form_fields" id='order' ng-app='order' ng-controller='DetailsCtrl'>
   <%= image_tag "spinner.gif", class: 'spinner' %>
+  {{order.number}}
 </div>
 
 <script>
-  var order_number = '<%= @order.number %>';
+  var order_number = "<%= @order.number %>"
 </script>
 
 <%= render :partial => "spree/admin/variants/autocomplete", :formats => :js %>

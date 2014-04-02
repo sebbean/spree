@@ -13,6 +13,8 @@ under the spree namespace that do stuff we find helpful.
 Hopefully, this will evolve into a propper class.
 **/
 
+Spree.path = "<%= Rails.application.routes.url_helpers.spree_path %>"
+
 Spree.Admin = {
   tipMe: function() {
     $('.with-tip').powerTip({
@@ -21,6 +23,10 @@ Spree.Admin = {
       fadeOutTime: 50,
       intentPollInterval: 150,
     })
+  },
+
+  apiPathFor: function(path) {
+    return window.location.origin + Spree.path + "/api/" + path + ".json"
   }
 }
 

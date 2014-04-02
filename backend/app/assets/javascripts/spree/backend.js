@@ -18,7 +18,8 @@
 //= require equalize
 //= require responsive-tables
 //= require underscore
-//= require backbone
+//= require angular
+//= require angular-route
 //= require moment
 //= require spree
 //= require spree/backend/spree-select2

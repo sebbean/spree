@@ -4,6 +4,7 @@ require 'jquery-ui-rails'
 require 'deface'
 require 'select2-rails'
 require 'momentjs-rails'
+require 'angularjs-rails'
 
 require 'spree/core'
 
