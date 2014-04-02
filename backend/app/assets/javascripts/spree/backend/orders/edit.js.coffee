@@ -5,6 +5,7 @@ $ ->
 
   "use strict"
 
+  $('#add-line-item').hide()
 
   Spree.Variant = Backbone.Model.extend
     urlRoot: Spree.routes.variants_api
@@ -117,7 +118,8 @@ $ ->
   Spree.Admin.OrderCustomerView = Backbone.View.extend
     el: '#order'
     render: -> 
-      this.$el.html('Customer view goes here')
+      customer_template = _.template($('#customer_details_template').html(), { order: order })
+      this.$el.html(customer_template)
 
   Spree.Admin.OrderRouter = Backbone.Router.extend
     routes:
@@ -130,12 +132,14 @@ $ ->
   router.on 'route:show', ->
     Spree.Admin.currentOrder.fetch
       success: (order) ->
+        $('#add-line-item').show()
         addProductView = new Spree.Admin.AddProductView(model: order)
         addProductView.render()
         orderView = new Spree.Admin.OrderView(model: order)
         orderView.render()
 
   router.on 'route:customer', ->
+    $('#add-line-item').hide()
     customerView = new Spree.Admin.OrderCustomerView(model: order)
     customerView.render()
 
