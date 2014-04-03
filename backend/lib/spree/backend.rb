@@ -5,7 +5,8 @@ require 'deface'
 require 'select2-rails'
 require 'momentjs-rails'
 
-require 'spree/core'
+require 'spree_core'
+require 'spree_api'
 
 require 'spree/responder'
 require 'spree/backend/action_callbacks'
