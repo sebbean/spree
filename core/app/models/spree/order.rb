@@ -581,6 +581,10 @@ module Spree
       self.ensure_updated_shipments
     end
 
+    def touch_if_variants_updated
+      touch if variants.any? { |v| v.updated_at > self.updated_at }
+    end
+
     private
 
       def link_by_email

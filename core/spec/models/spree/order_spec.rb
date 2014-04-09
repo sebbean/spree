@@ -616,4 +616,20 @@ describe Spree::Order do
       order.can_cancel?.should be_true
     end
   end
+
+  context "#touch_if_variants_updated" do
+    before { order.stub :updated_at => 1.day.ago }
+
+    it "touches if variants have been updated recently" do
+      order.stub :variants => [double(:updated_at => Time.now)]
+      expect(order).to receive(:touch)
+      order.touch_if_variants_updated
+    end
+
+    it "does not touch if variants have not been updated recently" do
+      order.stub :variants => [double(:updated_at => 2.days.ago)]
+      expect(order).to_not receive(:touch)
+      order.touch_if_variants_updated
+    end
+  end
 end

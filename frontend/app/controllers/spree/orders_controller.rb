@@ -37,6 +37,7 @@ module Spree
     def edit
       @order = current_order || Order.new
       associate_user
+      current_order.touch_if_variants_updated
       if stale?(current_order)
         respond_with(current_order)
       end
