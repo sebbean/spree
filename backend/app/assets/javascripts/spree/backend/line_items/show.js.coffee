@@ -12,7 +12,7 @@ Spree.LineItem = Backbone.Model.extend
     this.order().advance()
 
 Spree.Admin.LineItemShow = Backbone.View.extend
-  className: "line_item"
+  className: "line-item"
   tagName: "tr"
   render: ->
     template = _.template($("#line_item_template").html(), { line_item: this.model })
@@ -61,5 +61,5 @@ Spree.Admin.LineItemShow = Backbone.View.extend
       .done (msg) ->
         view.remove()
         line_item.advanceOrder()
-        if $('.line-items tr.line-item').length == 0
+        if $('#line-items tr.line-item').length == 0
           $('.line-items').hide()

@@ -1,0 +1,22 @@
+<script type='text/template' id='order_states_address_template'>
+  <fieldset id='cart_info' class='no-border-bottom'>
+    <legend><%= Spree.t("order.state.address") %></legend>
+    <div class="alpha six columns">
+      <fieldset class="no-border-bottom">
+        <legend align="center"><%= Spree.t(:billing_address) %></legend>
+        <%= render :partial => 'spree/admin/orders/address_form', :locals => { :type => "billing" } %>
+      </fieldset>
+    </div>
+
+    <div class="alpha six columns">
+      <fieldset class="no-border-bottom">
+        <legend align="center"><%= Spree.t(:shipping_address) %></legend>
+        <%= render :partial => 'spree/admin/orders/address_form', :locals => { :type => "shipping" } %>
+        <span>
+          <%= check_box_tag 'order[use_billing]', '1' %>
+          <%= label_tag 'order[use_billing]', Spree.t(:use_billing_address) %>
+        </span>
+      </fieldset>
+    </div>
+  </fieldset>
+</script>
