@@ -1,27 +1,5 @@
 <script type='text/template' id='edit_order_template'>
-  <div class='shipments'>
-  </div>
-  
-  <table id='line-items' class="line-items index hidden" data-hook="line-items">
-    <colgroup>
-      <col style="width: 10%;" />
-      <col style="width: 40%;" />
-      <col style="width: 10%;" />
-      <col style="width: 10%;" />
-    </colgroup>
-
-    <thead>
-      <th colspan="2"><%= Spree.t(:name) %></th>
-      <th><%= Spree.t(:price) %></th>
-      <th><%= Spree.t(:quantity) %></th>
-      <th><%= Spree.t(:total_price) %></th>
-      <th class="orders-actions actions" data-hook="admin_order_form_line_items_header_actions">&nbsp;</th>
-    </thead>
-
-    <tbody>
-    </tbody>
-  </table>
-
+  <%= render "spree/admin/orders/states" %>
 <%#= render :partial => "spree/admin/orders/adjustments", :locals => {
       :adjustments => @order.line_item_adjustments, 
       :order => order,
@@ -38,10 +16,8 @@
       :title => Spree.t(:order_adjustments)
  } %>
 
- <%% if (order.get('line_items').length > 0) { %>
-  <fieldset class="no-border-bottom" id="order-total" data-hook="order_details_total">
-    <legend><%= Spree.t(:order_total) %></legend>
-    <span class="order-total"><%%= order.get('display_total') %></span>
-  </fieldset>
-<%% } %>
+<fieldset class="no-border-bottom" id="order-total" data-hook="order_details_total">
+  <legend><%= Spree.t(:order_total) %></legend>
+  <span class="order-total"><%%= order.get('display_total') %></span>
+</fieldset>
 </script>

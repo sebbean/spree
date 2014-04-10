@@ -83,27 +83,28 @@ $ ->
       edit_order_template = _.template($("#edit_order_template").html(), { order: order })
       el.html(edit_order_template)
 
-      # I'd prefer if this was done with Backbone's collections, but I don't know how.
-      shipments = order.get('shipments')
-      if shipments.length > 0
-        _.each order.get('shipments'), (shipment_attrs) ->
-          shipment_attrs.order = order
-          shipment = new Spree.Shipment(shipment_attrs)
-          shipment_view = new Spree.Admin.ShipmentShow({ model: shipment, id: "shipment_#{shipment.id}" })
-          el.find('.shipments').append(shipment_view.$el)
-          shipment_view.render()
-      else
+      line_items = order.get('line_items')
+      line_items_table_body = el.find('#cart_info .line-items tbody')
+      _.each line_items, (line_item_attrs) ->
+        line_item_attrs.order = order
+        line_item = new Spree.LineItem(line_item_attrs)
+        line_item_view = new Spree.Admin.LineItemShow({ model: line_item, id: "line_item_#{line_item.id}"})
+        line_items_table_body.append(line_item_view.$el)
+        line_item_view.render()
+
+      # # I'd prefer if this was done with Backbone's collections, but I don't know how.
+      # shipments = order.get('shipments')
+      # if shipments.length > 0
+      #   _.each order.get('shipments'), (shipment_attrs) ->
+      #     shipment_attrs.order = order
+      #     shipment = new Spree.Shipment(shipment_attrs)
+      #     shipment_view = new Spree.Admin.ShipmentShow({ model: shipment, id: "shipment_#{shipment.id}" })
+      #     el.find('.shipments').append(shipment_view.$el)
+      #     shipment_view.render()
+      # else
         # There aren't any shipments, so render line items instead
         # This may happen if the order is in a pre-delivery state, or if the order never goes through the delivery state
-        line_items = order.get('line_items')
-        if line_items.length > 0
-          $('.line-items').show()
-          _.each line_items, (line_item_attrs) ->
-            line_item_attrs.order = order
-            line_item = new Spree.LineItem(line_item_attrs)
-            line_item_view = new Spree.Admin.LineItemShow({ model: line_item, id: "line_item_#{line_item.id}"})
-            el.find('.line-items tbody').append(line_item_view.$el)
-            line_item_view.render()
+        
 
 
       # Ensure that the tooltips display for all elements that should have them

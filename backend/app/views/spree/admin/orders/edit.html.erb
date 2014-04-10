@@ -16,9 +16,17 @@
   <%= "#{Spree.t(:order)} ##{@order.number}" %>
 <% end %>
 
-<%= render "add_product" %>
-
 <div data-hook="admin_order_form_fields" id='order'>
+
+  <div id='address_info'>
+
+  </div>
+
+  <div id='delivery_info'>
+
+  </div>
+
+
   <%= image_tag "spinner.gif", class: 'spinner' %>
 </div>
 
