@@ -1,2 +1,14 @@
 <%= render :partial => "spree/admin/orders/states/cart", :formats => :js %>
 <%= render :partial => "spree/admin/orders/states/address", :formats => :js %>
+
+<script type='text/template' id='order_states_template'>
+  <div id='states'>
+    <%% _.each(states, function(state, index) { %>
+      <%% lowercase_state = state.toLowerCase() %>
+      <%% active = lowercase_state == current_state.toLowerCase() %>
+      <span id='<%%= lowercase_state %>_state' data-state='<%%= state %>' <%% if (active) { %>class='active'<%% } %>>
+        <%%= index + 1 %>. <%%= state %>
+      </span>
+    <%% }) %>
+  </div>
+</script>

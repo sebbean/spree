@@ -69,3 +69,19 @@
   }
 }
 
+#states {
+  margin: 1.5em;
+
+  span {
+    text-transform: uppercase;
+    margin-right: 2.5em;
+    padding: 1em;
+  }
+
+  span.active {
+    background-color: $color-3;
+    font-weight: bold;
+    color: white;
+  }
+}
+

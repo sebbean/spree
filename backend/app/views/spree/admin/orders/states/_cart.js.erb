@@ -1,6 +1,6 @@
 <script type='text/template' id='order_states_cart_template'>
-  <fieldset id='cart_info' class='no-border-bottom'>
-    <legend><%= Spree.t("order.state.cart") %></legend>
+  <fieldset id='cart_info' class='state_info no-border-bottom'>
+    <legend><%%= position %>. <%= Spree.t("order_state.cart") %></legend>
     <%= render "add_product" %>
       
     <table id='line-items' class="line-items index hidden" data-hook="line-items">

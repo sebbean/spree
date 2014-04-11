@@ -29,26 +29,34 @@ $ ->
     initialize: ->
       this.model.on('change', this.render, this)
 
+    events:
+      "click #states span": "setActiveState"
+
+    setActiveState: (e) ->
+      # Display only the current state's info
+      $('#order .state_info').hide()
+      el = $(e.target)
+      state = el.data('state').toLowerCase()
+      $("#order ##{state}_info").show()
+
+      # Set active state in "progress bar"
+      $('#states span').removeClass()
+      $("##{state}_state").addClass("active")
+
+    states: ->
+      states = this.model.get('checkout_steps')
+      states.pop()
+      _.map states, (state) ->
+        state.substring(0,1).toUpperCase() + state.substring(1)
+
     render: ->
       el = this.$el
       order = this.model
       el.empty()
 
+      this.renderStatesBar()
+      this.renderStates()
       this.renderSidebar()
-
-      # Render the cart
-      cart_view = new Spree.Admin.OrderStateViews.Cart({ model: order})
-      cart_view.render()
-
-      # Render all the other states
-      steps = order.get('checkout_steps')
-      steps.pop() # remove complete
-      _.each steps, (step) ->
-        step = step.substring(0,1).toUpperCase() + step.substring(1)
-        console.log("Rendering step template: #{step}")
-        state_view = new Spree.Admin.OrderStateViews[step]
-        state_view.render()
-
 
       order_totals_template = _.template($("#order_totals_template").html(), { order: order })
       el.append(order_totals_template)
@@ -62,17 +70,47 @@ $ ->
       sidebar_template = _.template($('#order_sidebar_template').html(), { order: this.model })
       $('#order_information').html(sidebar_template)
 
+    renderStatesBar: ->
+      states = this.states()
+      states.unshift("Cart")
+      states_template = _.template(
+        $('#order_states_template').html(), {
+          states: states,
+          current_state: this.model.get('state')
+        })
+      this.$el.prepend(states_template)
+
+    renderStates: ->
+      order = this.model
+      # Render the cart
+      cart_view = new Spree.Admin.OrderStateViews.Cart({ model: order, position: 1 })
+      cart_view.render()
+
+      # Render all the other states
+      _.each this.states(), (state, index) ->
+        console.log("Rendering state template: #{state}")
+        state_view = new Spree.Admin.OrderStateViews[state]({ model: order, position: index+2 })
+        state_view.render()
+
+      this.$el.find(".state_info").hide()
+      this.$el.find("##{order.get('state')}_info").show()
+
+
   Spree.Admin.OrderStateViews = {}
-  Spree.Admin.OrderStateViews.Cart = Backbone.View.extend    
+  Spree.Admin.OrderStateViews.Base = Backbone.View.extend
+    initialize: (options) ->
+      this.position = options.position
+
     el: '#order'
 
+  Spree.Admin.OrderStateViews.Cart = Spree.Admin.OrderStateViews.Base.extend
     events:
       "change #add_variant_id": "showStockDetails"
       "click .add_variant": "addVariant"
 
     render: ->
       order = this.model
-      template = _.template($('#order_states_cart_template').html(), { order: order })
+      template = _.template($('#order_states_cart_template').html(), { order: order, position: this.position })
       this.$el.append(template)
       this.renderLineItems()
 
@@ -128,14 +166,12 @@ $ ->
       .error (msg) ->
         console.error(msg)
 
-  Spree.Admin.OrderStateViews.Address = Backbone.View.extend
-    el: '#order'
+  Spree.Admin.OrderStateViews.Address = Spree.Admin.OrderStateViews.Base.extend
     render: ->
       order = this.model
-      template = _.template($('#order_states_address_template').html(), { order: order })
+      template = _.template($('#order_states_address_template').html(), { order: order, position: this.position })
       this.$el.append(template)
       # this.$el.find("#billing-country_id").select2
-
 
 
   Spree.Admin.OrderStateViews.Delivery = Backbone.View.extend({})
