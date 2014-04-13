@@ -20,6 +20,7 @@
 //= require underscore
 //= require backbone
 //= require moment
+//= require jquery.serializeJSON
 //= require spree
 //= require spree/backend/spree-select2
 //= require_tree .

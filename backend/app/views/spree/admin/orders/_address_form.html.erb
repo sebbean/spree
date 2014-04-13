@@ -1,55 +1,53 @@
 <div id="<%= type %>" data-hook="address_fields">
   <div class="field <%= "#{type}-row" %>">
-    <%= label_tag :firstname, Spree.t(:first_name) %><br>
-    <%= text_field_tag :firstname, '', class: 'fullwidth' %>
+    <%= label_tag "order[#{type}_address_attributes][firstname]", Spree.t(:first_name) %><br>
+    <%= text_field_tag "order[#{type}_address_attributes][firstname]", '', class: 'fullwidth' %>
   </div>
 
   <div class="field <%= "#{type}-row" %>">
-    <%= label_tag :lastname, Spree.t(:last_name) %><br>
-    <%= text_field_tag :lastname, '', class: 'fullwidth' %>
+    <%= label_tag "order[#{type}_address_attributes][lastname]", Spree.t(:last_name) %><br>
+    <%= text_field_tag "order[#{type}_address_attributes][lastname]", '', class: 'fullwidth' %>
   </div>
 
   <% if Spree::Config[:company] %>
     <div class="field <%= "#{type}-row" %>">
-      <%= label_tag :company, Spree.t(:company) %><br>
-      <%= text_field_tag :company, Spree.t(:company) %>
+      <%= label_tag "order[#{type}_address_attributes][company]", Spree.t(:company) %><br>
+      <%= text_field_tag "order[#{type}_address_attributes][company]", Spree.t(:company) %>
     </div>
   <% end %>
 
   <div class="field <%= "#{type}-row" %>">
-    <%= label_tag :address1, Spree.t(:street_address) %><br>
-    <%= text_field_tag :address1, '', class: 'fullwidth' %>
+    <%= label_tag "order[#{type}_address_attributes][address1]", Spree.t(:street_address) %><br>
+    <%= text_field_tag "order[#{type}_address_attributes][address1]", '', class: 'fullwidth' %>
   </div>
 
   <div class="field <%= "#{type}-row" %>">
-    <%= label_tag :address2, Spree.t(:street_address_2) %><br>
-    <%= text_field_tag :address2, '', class: 'fullwidth' %>
+    <%= label_tag "order[#{type}_address_attributes][address2]", Spree.t(:street_address_2) %><br>
+    <%= text_field_tag "order[#{type}_address_attributes][address2]", '', class: 'fullwidth' %>
   </div>
 
   <div class="field <%= "#{type}-row" %>">
-    <%= label_tag :city, Spree.t(:city) %><br>
-    <%= text_field_tag :city, '', class: 'fullwidth' %>
+    <%= label_tag "order[#{type}_address_attributes][city]", Spree.t(:city) %><br>
+    <%= text_field_tag "order[#{type}_address_attributes][city]", '', class: 'fullwidth' %>
   </div>
 
   <div class="field <%= "#{type}-row" %>">
-    <%= label_tag :zipcode, Spree.t(:zipcode) %><br>
-    <%= text_field_tag :zipcode, '', class: 'fullwidth' %>
+    <%= label_tag "order[#{type}_address_attributes][zipcode]", Spree.t(:zipcode) %><br>
+    <%= text_field_tag "order[#{type}_address_attributes][zipcode]", '', class: 'fullwidth' %>
   </div>
 
   <div class="field <%= "#{type}-row" %>">
-    <%= label_tag :country_id, Spree.t(:country) %><br>
-    <%= hidden_field_tag :country_id, :id => "#{type}-country-id" %>
+    <%= label_tag "order[#{type}_address_attributes][country_id]", Spree.t(:country) %><br>
+    <%= hidden_field_tag "order[#{type}_address_attributes][country_id]", '', class: "fullwidth" %>
+  </div>
+
+  <div class="field <%= "#{type}-row" %> hidden" id='<%= type %>_state_id'>
+    <%= label_tag "order[#{type}_address_attributes][state_id]", Spree.t(:state) %><br>
+    <%= select_tag "order[#{type}_address_attributes][state_id]", '', class: 'fullwidth' %>
   </div>
 
   <div class="field <%= "#{type}-row" %>">
-    <%= label_tag :state_id, Spree.t(:state) %>
-    <span>
-      State select goes here
-    </span>
-  </div>
-
-  <div class="field <%= "#{type}-row" %>">
-    <%= label_tag :phone, Spree.t(:phone) %><br>
-    <%= text_field_tag :phone, '', class: 'fullwidth' %>
+    <%= label_tag "order[#{type}_address_attributes][phone]", Spree.t(:phone) %><br>
+    <%= text_field_tag "order[#{type}_address_attributes][phone]", '', class: 'fullwidth' %>
   </div>
 </div>

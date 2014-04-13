@@ -1,22 +1,35 @@
 <script type='text/template' id='order_states_address_template'>
-  <fieldset id='address_info' class='state_info no-border-bottom'>
-    <legend><%%= position %>. <%= Spree.t("order_state.address") %></legend>
-    <div class="alpha six columns">
-      <fieldset class="no-border-bottom">
-        <legend align="center"><%= Spree.t(:billing_address) %></legend>
-        <%= render :partial => 'spree/admin/orders/address_form', :locals => { :type => "billing" } %>
-      </fieldset>
-    </div>
+  <form class="state_info" id='address_info'>
+    <fieldset class="no-border-bottom">
+      <legend><%%= position %>. <%= Spree.t("order_state.address") %></legend>
+      <div class="twelve columns">
+        <label for='order_email'>Email</label>
+        <input type='email' id='order_email' name='order[email]'>
+      </div>
+      <div class="alpha six columns" id='billing_address'>
+        <fieldset class="no-border-bottom">
+          <legend align="center"><%= Spree.t(:billing_address) %></legend>
+          <%= render :partial => 'spree/admin/orders/address_form', :locals => { :type => "bill" } %>
+          <span>
+            <%= check_box_tag 'use_billing', '1' %>
+            <%= label_tag 'use_billing', Spree.t(:same_as_shipping) %>
+          </span>
+        </fieldset>
+      </div>
 
-    <div class="alpha six columns">
-      <fieldset class="no-border-bottom">
-        <legend align="center"><%= Spree.t(:shipping_address) %></legend>
-        <%= render :partial => 'spree/admin/orders/address_form', :locals => { :type => "shipping" } %>
-        <span>
-          <%= check_box_tag 'order[use_billing]', '1' %>
-          <%= label_tag 'order[use_billing]', Spree.t(:use_billing_address) %>
-        </span>
-      </fieldset>
-    </div>
-  </fieldset>
+      <div class="alpha six columns" id='shipping_address'>
+        <fieldset class="no-border-bottom">
+          <legend align="center"><%= Spree.t(:shipping_address) %></legend>
+          <%= render :partial => 'spree/admin/orders/address_form', :locals => { :type => "ship" } %>
+        </fieldset>
+      </div>
+    </fieldset>
+    <%= submit_tag "Update", :class => "icon icon-check" %>
+  </form>
+</script>
+
+<script type='text/template' id='address_states_template'>
+  <%% _.each(states, function(state) { %>
+    <option value='<%%= state.id %>'><%%= state.name %></option>
+  <%% }) %>
 </script>

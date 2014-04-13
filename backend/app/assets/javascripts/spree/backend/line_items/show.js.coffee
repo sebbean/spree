@@ -11,6 +11,9 @@ Spree.LineItem = Backbone.Model.extend
   advanceOrder: ->
     this.order().advance()
 
+  refreshOrder: ->
+    this.order().refresh()
+
 Spree.Admin.LineItemShow = Backbone.View.extend
   className: "line-item"
   tagName: "tr"
@@ -50,6 +53,7 @@ Spree.Admin.LineItemShow = Backbone.View.extend
       line_item.advanceOrder()
 
   delete: (e) ->
+    e.preventDefault()
     view = this
     line_item = view.model
     e.preventDefault()
