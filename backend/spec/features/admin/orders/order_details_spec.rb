@@ -253,13 +253,18 @@ describe "Order Details", js: true do
       page.should_not have_link('Payments')
       page.should_not have_link('Return Authorizations')
 
-      # Order item actions
+      # Cart actions
+      find("#states #cart_state").click()
+      binding.pry
+      page.should_not have_css('#add-line-item')
+
+      # Shipment item actions
+      find("#states #delivery_state").click()
+      binding.pry
       page.should_not have_css('.delete-item')
       page.should_not have_css('.split-item')
       page.should_not have_css('.edit-item')
       page.should_not have_css('.edit-tracking')
-
-      page.should_not have_css('#add-line-item')
     end
   end
 
