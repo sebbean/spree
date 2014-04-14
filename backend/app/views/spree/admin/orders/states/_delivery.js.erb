@@ -24,9 +24,9 @@
     <table class="stock-contents index" data-hook="stock-contents">
       <colgroup>
         <col style="width: 10%;" />
-        <col style="width: 30%;" />
+        <col style="width: 25%;" />
         <col style="width: 15%;" />
-        <col style="width: 15%;" />
+        <col style="width: 20%;" />
         <col style="width: 15%;" />
         <col style="width: 15%;" />
       </colgroup>
@@ -59,7 +59,7 @@
           <td class="item-price align-center"><%%= item.line_item.single_display_amount %></td>
           <td class="item-qty-show align-center">
             <%% _.each(item.states, function(count, state) { %>
-              <%%= count %> x <%%= Spree.translations.inventory_states[state] %>
+              <%%= count %> x <%%= Spree.translations.inventory_states[state] %><br>
             <%% }) %>
           </td>
           <td class="item-qty-edit hidden">
