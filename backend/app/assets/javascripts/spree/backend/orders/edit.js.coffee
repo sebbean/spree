@@ -37,6 +37,7 @@ $ ->
     el: '#order',
     initialize: ->
       this.current_state = this.model.get('state')
+      this.state_views = []
       this.model.on('change', this.render, this)
 
     events:
@@ -57,6 +58,11 @@ $ ->
     render: ->
       el = this.$el
       order = this.model
+      # We need to remove each view so that the event hooks aren't re-registered
+      # upon ever re-rendering of this template. Coincidentally, this also removes 
+      # the templates from the view.
+      _.each this.state_views, (view) ->
+        view.remove()
       el.empty()
 
       # Default to the current state
@@ -89,16 +95,21 @@ $ ->
       this.$el.prepend(states_template)
 
     renderStates: ->
+      view = this
       order = this.model
       # Render the cart
       cart_view = new Spree.Admin.OrderStateViews.Cart({ model: order, position: 1 })
       cart_view.render()
+      view.$el.append(cart_view.$el)
+      this.state_views.push(cart_view)
 
       # Render all the other states
       _.each this.states(), (state, index) ->
         console.log("Rendering state template: #{state}")
         state_view = new Spree.Admin.OrderStateViews[state]({ model: order, position: index+2 })
         state_view.render()
+        view.$el.append(state_view.$el)
+        view.state_views.push(state_view)
 
       this.$el.find(".state_info").hide()
       this.$el.find("##{this.current_state}_info").show()
