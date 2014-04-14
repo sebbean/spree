@@ -117,12 +117,17 @@ $ ->
     states: ->
       # Slice is used because otherwise pop() would pop off states from checkout_steps
       states = this.model.get('checkout_steps').slice(0)
-      states.pop()
+      if this.model.get('state') == 'complete'
+        # Remove confirm step because we can't re-confirm after initial confirmation
+        confirm_index = states.indexOf('confirm')
+        if confirm_index > -1
+          states.splice(confirm_index, 1)
       _.map states, (state) ->
         state.substring(0,1).toUpperCase() + state.substring(1)
 
   Spree.Admin.OrderStateViews.Payment = Backbone.View.extend({})
-  Spree.Admin.OrderStateViews.Confirmation = Backbone.View.extend({})
+  Spree.Admin.OrderStateViews.Confirm = Backbone.View.extend({})
+  Spree.Admin.OrderStateViews.Complete = Backbone.View.extend({})
 
 
   Spree.Admin.OrderRouter = Backbone.Router.extend

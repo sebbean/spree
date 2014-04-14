@@ -8,11 +8,16 @@ Spree.Admin.OrderStateViews.Address = Spree.Admin.OrderStateViews.Base.extend
     "change #order_bill_address_attributes_country_id": "updateBillingStates"
     "change #order_ship_address_attributes_country_id": "updateShippingStates"
     "change #use_billing": "toggleShippingAddress"
-    "submit form": "updateAddress"
+    "change #guest_checkout": "toggleGuestCheckout"
+    "change #order_user_id": "userSelected"
+    "submit": "updateAddress"
 
   toggleShippingAddress: ->
-    $('#shipping_address').toggle()
+    this.$el.find('#shipping_address').toggle()
 
+  toggleGuestCheckout: ->
+    this.$el.find('#guest_checkout_fields').toggle()
+    this.$el.find('#user_picker').toggle()
 
   updateBillingStates: (e) ->
     this.updateStates(e, 'bill')
@@ -21,6 +26,7 @@ Spree.Admin.OrderStateViews.Address = Spree.Admin.OrderStateViews.Base.extend
     this.updateStates(e, 'ship')
 
   updateStates: (e, type) ->
+    view = this
     e.preventDefault()
     country_id = $(e.target).val()
     $.ajax
@@ -29,8 +35,12 @@ Spree.Admin.OrderStateViews.Address = Spree.Admin.OrderStateViews.Base.extend
         state_select = $("#order_#{type}_address_attributes_state_id")
         states = response.states
         if states.length > 0
+          current_state_id = view.model.get("#{type}_address").state_id
           state_select.html(
-            _.template($('#address_states_template').html(), { states: response.states} )
+            _.template($('#address_states_template').html(), {
+              states: response.states,
+              current_state_id: current_state_id 
+            })
           )
           state_select.select2()
           state_select.parent().show()
@@ -51,9 +61,21 @@ Spree.Admin.OrderStateViews.Address = Spree.Admin.OrderStateViews.Base.extend
       type: "PUT"
       url: order.url()
       data: data
-    ).done (response) ->
-      order.set(response)
+    ).done ->
+      $.ajax(
+        type: "PUT"
+        url: order.url() + "/advance"
+      ).done (response) ->
+        order.set(response)
 
+  userSelected: ->
+    customer = this.customer
+    model = this.model
+
+    model.attributes['user_id'] = customer.id
+    model.attributes['bill_address'] = customer.bill_address
+    model.attributes['ship_address'] = customer.ship_address
+    model.trigger('change')
 
   render: ->
     view = this
@@ -66,34 +88,84 @@ Spree.Admin.OrderStateViews.Address = Spree.Admin.OrderStateViews.Base.extend
       }
     )
     el.append(template)
+    el.find('#order_email').val(order.get('email'))
+    el.find('#order_user_id').val(order.get('user_id'))
+
     _.each ["bill", "ship"], (type) ->        
-      $('#order_email').val(order.get('email'))
       view.fillAddressAttributes(type)
+      view.buildCountrySelector(type)
 
-      countries_api = Spree.pathFor('api/countries')
-      country_id = el.find("#order_#{type}_address_attributes_country_id")
-      country_id.select2
-        initSelection: (element, callback) ->
-          $.ajax
-            url: countries_api + "/#{element.val()}"
-          .done (response) ->
-            callback(response)
-        ajax:
-          url: countries_api
-          data: (term, page) ->
-            q:
-              name_cont: term
-          results: (data, page) ->
-            results: data["countries"]
-        formatResult: (country) ->
-          country.name
-        formatSelection: (country) ->
-          country.name
-
-      # Loads + shows states select box if country_id has been pre-populated
-      if country_id.val()
-        country_id.trigger('change')
+    view.buildUserSelector()
+    view.toggleUserInfo()
 
   fillAddressAttributes: (type) ->
+    view = this
     _.each this.model.get("#{type}_address"), (value, key) ->
-      $("#order_#{type}_address_attributes_#{key}").val(value)
+      view.$el.find("#order_#{type}_address_attributes_#{key}").val(value)
+
+  buildUserSelector: ->
+    view = this
+    users_api = Spree.pathFor('api/users')
+    customerTemplate = Handlebars.compile($('#customer_autocomplete_template').text())
+
+    this.$el.find("#order_user_id").select2
+      placeholder: Spree.translations.choose_a_customer
+      initSelection: (element, callback) ->
+        $.get users_api, { id_eq: element.val() }, (data) ->
+          callback(data.users[0])
+      ajax:
+        url: users_api
+        datatype: 'json'
+        data: (term, page) ->
+          q: 
+            email_cont: term
+        results: (data, page) ->
+          results: data.users
+      dropdownCssClass: 'customer_search'
+      formatResult: (customer) ->
+        customerTemplate
+          customer: customer,
+          bill_address: customer.bill_address,
+          ship_address: customer.ship_address
+      formatSelection: (customer) ->
+        # HACK: To pass the customer and all associated data back to the change event
+        view.customer = customer
+        customer.email
+
+
+
+  toggleUserInfo: ->
+    if this.model.get('user_id')
+      this.$el.find('#user_picker').show()
+      this.$el.find('#guest_checkout_fields').hide()
+      this.$el.find('#guest_checkout').prop('checked', '')
+    else
+      this.$el.find('#user_picker').hide()
+      this.$el.find('#guest_checkout_fields').show()
+      this.$el.find('#guest_checkout').prop('checked', 'checked')
+
+
+  buildCountrySelector: (type) ->
+    countries_api = Spree.pathFor('api/countries')
+    country_id = this.$el.find("#order_#{type}_address_attributes_country_id")
+    country_id.select2
+      initSelection: (element, callback) ->
+        $.ajax
+          url: countries_api + "/#{element.val()}"
+        .done (response) ->
+          callback(response)
+      ajax:
+        url: countries_api
+        data: (term, page) ->
+          q:
+            name_cont: term
+        results: (data, page) ->
+          results: data["countries"]
+      formatResult: (country) ->
+        country.name
+      formatSelection: (country) ->
+        country.name
+
+    # Loads + shows states select box if country_id has been pre-populated
+    if country_id.val()
+      country_id.trigger('change')
