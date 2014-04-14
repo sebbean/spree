@@ -1,5 +1,8 @@
 <script type='text/template' id='order_states_delivery_template'>
   <legend><%%= position %>. <%= Spree.t("order_state.delivery") %></legend>
+  <%% if (order.get('special_instructions')) { %>
+    <strong><%= Spree.t(:special_instructions) %></strong>: <%%= order.get('special_instructions') %>
+  <%% } %>
 </script>
 
 <script type='text/template' id='shipment_template'>
