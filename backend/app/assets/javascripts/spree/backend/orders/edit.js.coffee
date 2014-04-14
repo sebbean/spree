@@ -143,10 +143,6 @@ $ ->
         orderView = new Spree.Admin.OrderView(model: order)
         orderView.render()
 
-  router.on 'route:customer', ->
-    customerView = new Spree.Admin.OrderCustomerView(model: order)
-    customerView.render()
-
   if order_number?
     Spree.Admin.currentOrder = new Spree.Order(number: order_number)
     Backbone.history.start()
