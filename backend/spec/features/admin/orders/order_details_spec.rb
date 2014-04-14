@@ -22,12 +22,13 @@ describe "Order Details", js: true do
 
     context "edit order page" do
       it "should allow me to edit order details" do
+        find("#states #cart_state").click()
         page.should have_content("spree t-shirt")
         page.should have_content("$40.00")
 
         within_row(1) do
           click_icon :edit
-          fill_in "quantity", :with => "1"
+          find(".line_item_quantity").set(1)
         end
         click_icon :ok
 
