@@ -9,6 +9,7 @@ module Spree
 
       before_filter :check_alerts
       before_filter :authorize_admin
+      before_filter :generate_admin_api_key
 
       protected
 
