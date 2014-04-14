@@ -1,5 +1,9 @@
 <script type='text/template' id='line_item_template'>
-  <td class="item-image"><img src='<%%= line_item.variant().images[0].mini_url %>'></td>
+  <td class="item-image">
+    <%% if (line_item.variant().images[0]) { %>
+      <img src='<%%= line_item.variant().images[0].mini_url %>'>
+    <%% } %>
+  </td>
   <td class="item-name">
     <%%= line_item.variant().name %>
     <%% options_text = line_item.variant().options_text %>

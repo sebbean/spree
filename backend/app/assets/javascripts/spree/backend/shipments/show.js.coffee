@@ -16,7 +16,9 @@ Spree.Shipment = Backbone.Model.extend
     variant = _.find this.order().variants(), (v) ->
       v.id == id
   imageForVariant: (id) ->
-    this.findVariant(id).images[0].mini_url
+    images = this.findVariant(id).images
+    if images.length > 0
+      images[0].mini_url
 
   findLineItem: (variant_id) ->
     line_item = _.find this.order().get('line_items'), (li) ->
