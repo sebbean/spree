@@ -1,30 +1,28 @@
 <script type='text/template' id='order_states_cart_template'>
-  <fieldset id='cart_info' class='state_info no-border-bottom'>
-    <legend><%%= position %>. <%= Spree.t("order_state.cart") %></legend>
-    <%= render "add_product" %>
-      
-    <table id='line-items' class="line-items index hidden" data-hook="line-items">
-      <colgroup>
-        <col style="width: 10%;" />
-        <col style="width: 40%;" />
-        <col style="width: 10%;" />
-        <col style="width: 10%;" />
-      </colgroup>
+  <legend><%%= position %>. <%= Spree.t("order_state.cart") %></legend>
+  <%= render "add_product" %>
+    
+  <table id='line-items' class="line-items index hidden" data-hook="line-items">
+    <colgroup>
+      <col style="width: 10%;" />
+      <col style="width: 40%;" />
+      <col style="width: 10%;" />
+      <col style="width: 10%;" />
+    </colgroup>
 
-      <thead>
-        <th colspan="2"><%= Spree.t(:name) %></th>
-        <th><%= Spree.t(:price) %></th>
-        <th><%= Spree.t(:quantity) %></th>
-        <th><%= Spree.t(:total_price) %></th>
-        <th class="orders-actions actions" data-hook="admin_order_form_line_items_header_actions">&nbsp;</th>
-      </thead>
+    <thead>
+      <th colspan="2"><%= Spree.t(:name) %></th>
+      <th><%= Spree.t(:price) %></th>
+      <th><%= Spree.t(:quantity) %></th>
+      <th><%= Spree.t(:total_price) %></th>
+      <th class="orders-actions actions" data-hook="admin_order_form_line_items_header_actions">&nbsp;</th>
+    </thead>
 
-      <tbody>
-      </tbody>
-    </table>
+    <tbody>
+    </tbody>
+  </table>
 
-    <div id='no-items-message' class='no-objects-found hidden'>
-      <%= Spree.t(:your_order_is_empty_add_product) %>
-    </div>
-  </fieldset>
+  <div id='no-items-message' class='no-objects-found hidden'>
+    <%= Spree.t(:your_order_is_empty_add_product) %>
+  </div>
 </script>

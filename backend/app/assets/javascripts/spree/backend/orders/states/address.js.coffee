@@ -1,6 +1,9 @@
 #= require spree/backend/orders/states/base
 
 Spree.Admin.OrderStateViews.Address = Spree.Admin.OrderStateViews.Base.extend
+  tagName: 'form'
+  className: 'state_info'
+  id: 'address_info'
   events:
     "change #order_bill_address_attributes_country_id": "updateBillingStates"
     "change #order_ship_address_attributes_country_id": "updateShippingStates"

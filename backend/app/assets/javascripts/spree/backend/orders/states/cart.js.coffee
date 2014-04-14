@@ -1,6 +1,7 @@
 #= require spree/backend/orders/states/base
 
 Spree.Admin.OrderStateViews.Cart = Spree.Admin.OrderStateViews.Base.extend
+  id: 'cart_info'
   events:
     "change #add_variant_id": "showStockDetails"
     "click .add_variant": "addVariant"
@@ -11,12 +12,12 @@ Spree.Admin.OrderStateViews.Cart = Spree.Admin.OrderStateViews.Base.extend
     this.$el.append(template)
     this.renderLineItems()
 
-    $('#add_variant_id').variantAutocomplete()
+    this.$el.find('#add_variant_id').variantAutocomplete()
 
   renderLineItems: ->
     order = this.model
     line_items = order.get('line_items')
-    line_items_table = this.$el.find('#cart_info .line-items')
+    line_items_table = this.$el.find('.line-items')
     no_items_message = this.$el.find('#no-items-message')
 
     if line_items.length > 0
