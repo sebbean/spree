@@ -111,8 +111,8 @@ Spree.Admin.OrderStateViews.Address = Spree.Admin.OrderStateViews.Base.extend
     this.$el.find("#order_user_id").select2
       placeholder: Spree.translations.choose_a_customer
       initSelection: (element, callback) ->
-        $.get users_api, { id_eq: element.val() }, (data) ->
-          callback(data.users[0])
+        $.get "#{users_api}/#{element.val()}", (data) ->
+          callback(data)
       ajax:
         url: users_api
         datatype: 'json'
