@@ -1,35 +1,45 @@
 <script type='text/template' id='order_states_address_template'>
   <fieldset class="no-border-bottom">
     <legend><%%= position %>. <%= Spree.t("order_state.address") %></legend>
-    <div class="twelve columns" id='user_info'>
-      <input type='checkbox' id='guest_checkout'>
-      <label for='guest_checkout'><%= Spree.t(:guest_checkout) %></label>
-      <p class='field' id='user_picker'>
-        <label for='order_user_id'><%= Spree.t(:choose_a_customer) %></label>
-        <input type='hidden' id='order_user_id' name='order[user_id]' class='fullwidth'>
-      </p>
-      <div id='guest_checkout_fields'>
-        <label for='order_email'><%= Spree.t(:email) %></label><br>
-        <input type='email' id='order_email' name='order[email]'>
+    <%% if (order.get('permissions').can_update) { %>
+      <div class="twelve columns" id='user_info'>
+        <input type='checkbox' id='guest_checkout'>
+        <label for='guest_checkout'><%= Spree.t(:guest_checkout) %></label>
+        <p class='field' id='user_picker'>
+          <label for='order_user_id'><%= Spree.t(:choose_a_customer) %></label>
+          <input type='hidden' id='order_user_id' name='order[user_id]' class='fullwidth'>
+        </p>
+        <div id='guest_checkout_fields'>
+          <label for='order_email'><%= Spree.t(:email) %></label><br>
+          <input type='email' id='order_email' name='order[email]'>
+        </div>
       </div>
-    </div>
-    <div class="alpha six columns" id='billing_address'>
-      <fieldset class="no-border-bottom">
-        <legend align="center"><%= Spree.t(:billing_address) %></legend>
-        <%= render :partial => 'spree/admin/orders/address_form', :locals => { :type => "bill" } %>
-        <span>
-          <%= check_box_tag 'use_billing', '1' %>
-          <%= label_tag 'use_billing', Spree.t(:same_as_shipping) %>
-        </span>
-      </fieldset>
-    </div>
+    <%% } %>
+      <div class="alpha six columns" id='billing_address'>
+        <fieldset class="no-border-bottom">
+          <legend align="center"><%= Spree.t(:billing_address) %></legend>
+          <%% if (order.get('permissions').can_update) { %>
+            <%= render :partial => 'spree/admin/orders/address_form', :locals => { :type => "bill" } %>
+            <span>
+              <%= check_box_tag 'use_billing', '1' %>
+              <%= label_tag 'use_billing', Spree.t(:same_as_shipping) %>
+            </span>
+          <%% } else { %>
+            <%= render :partial => 'spree/admin/orders/address', :locals => { :type => "bill" } %>
+          <%% } %>
+        </fieldset>
+      </div>
 
-    <div class="alpha six columns" id='shipping_address'>
-      <fieldset class="no-border-bottom">
-        <legend align="center"><%= Spree.t(:shipping_address) %></legend>
-        <%= render :partial => 'spree/admin/orders/address_form', :locals => { :type => "ship" } %>
-      </fieldset>
-    </div>
+      <div class="alpha six columns" id='shipping_address'>
+        <fieldset class="no-border-bottom">
+          <legend align="center"><%= Spree.t(:shipping_address) %></legend>
+          <%% if (order.get('permissions').can_update) { %>
+            <%= render :partial => 'spree/admin/orders/address_form', :locals => { :type => "ship" } %>
+          <%% } else { %>
+            <%= render :partial => 'spree/admin/orders/address', :locals => { :type => "ship" } %>
+          <%% } %>
+        </fieldset>
+      </div>
   </fieldset>
   <%= submit_tag "Update", :class => "icon icon-check" %>
 </script>

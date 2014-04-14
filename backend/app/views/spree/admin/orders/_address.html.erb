@@ -1,0 +1,33 @@
+<% address = @order.send("#{type}_address") %>
+<dl>
+  <dt><%= Spree.t(:name) %></dt>
+  <dd><%= address.full_name %></dd>
+
+  <dt><%= Spree.t(:address1) %></dt>
+  <dd><%= address.address1 %></dd>
+
+  <% if address.address2.present? %>
+    <dt><%= Spree.t(:address2) %></dt>
+    <dd><%= address.address2 %></dd>
+  <% end %>
+
+  <% if address.company.present? %>
+    <dt><%= Spree.t(:company) %></dt>
+    <dd><%= address.company %></dd>
+  <% end %>
+
+  <dt><%= Spree.t(:city) %></dt>
+  <dd><%= address.city %></dd>
+
+  <dt><%= Spree.t(:zipcode) %></dt>
+  <dd><%= address.zipcode %></dd>
+
+  <dt><%= Spree.t(:country) %></dt>
+  <dd><%= address.country.name %></dd>
+
+  <dt><%= Spree.t(:state) %></dt>
+  <dd><%= address.state_text %></dd>
+
+  <dt><%= Spree.t(:phone) %></dt>
+  <dd><%= address.phone %></dd>
+</dl>

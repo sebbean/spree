@@ -23,9 +23,11 @@
   </td>
   <td class="item-total align-center"><%%= line_item.get('display_amount') %></td>
   <td class="actions" data-hook="cart_line_item_actions">
-    <a href='#' class='save icon_link icon-ok no-text with-tip' title='<%= Spree.t('actions.save') %>' style='display:none'></a>
-    <a href='#' class='cancel icon_link icon-cancel no-text with-tip' title='<%= Spree.t('actions.cancel') %>' style='display:none'></a>
-    <a href='#' class='edit icon_link icon-edit no-text with-tip' title='<%= Spree.t('edit') %>'></a>
-    <a href='#' class='delete icon_link icon-trash no-text with-tip' title='<%= Spree.t('delete') %>'></a>
+    <%% if (line_item.order().get('permissions').can_update) { %>
+      <a href='#' class='save icon_link icon-ok no-text with-tip' title='<%= Spree.t('actions.save') %>' style='display:none'></a>
+      <a href='#' class='cancel icon_link icon-cancel no-text with-tip' title='<%= Spree.t('actions.cancel') %>' style='display:none'></a>
+      <a href='#' class='edit icon_link icon-edit no-text with-tip' title='<%= Spree.t('edit') %>'></a>
+      <a href='#' class='delete icon_link icon-trash no-text with-tip' title='<%= Spree.t('delete') %>'></a>
+    <%% } %>
   </td>
 </script>
