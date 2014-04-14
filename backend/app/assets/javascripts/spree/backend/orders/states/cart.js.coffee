@@ -61,6 +61,6 @@ Spree.Admin.OrderStateViews.Cart = Spree.Admin.OrderStateViews.Base.extend
           variant_id: variant_id
           quantity: quantity
     .done (msg) ->
-      order.refresh()
+      order.fetch()
     .error (msg) ->
       console.error(msg)
