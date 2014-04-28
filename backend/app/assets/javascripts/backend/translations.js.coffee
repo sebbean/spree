@@ -67,4 +67,8 @@ I18n.translations = {
       phone: "Phone"
       state: "State"
       zipcode: "Zip Code"
+    manifest_item_split:
+      move_variant_to: 'Move variant to'
+      existing_shipments: 'Existing shipments'
+      new_shipment_at_location: 'New shipment at location'
 }
