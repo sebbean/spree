@@ -28,9 +28,12 @@
         <a href='#' {{action 'cancel'}} class="cancel-item icon_link icon-cancel no-text with-tip" title='{{i18n actions.cancel}}'></a>
       {{else}}
         <a href='#' {{action 'edit'}} class='edit-item icon_link icon-edit no-text with-tip' title='{{i18n actions.edit}}'></a>
-        <a href='#' class='split-item icon_link icon-resize-horizontal no-text with-tip' title='{{i18n actions.split}}'></a>
+        <a href='#' {{action 'split'}} class='split-item icon_link icon-resize-horizontal no-text with-tip' title='{{i18n actions.split}}'></a>
         <a href='#' {{action 'delete'}} class='delete-item icon-trash no-text with-tip' title='{{i18n actions.delete}}'></a>
       {{/if}}
     {{/if}}
   </td>
+</tr>
+<tr {{bind-attr class="splitting:shown:hidden"}}>
+  {{render 'orders/shipments/manifest_item_split' this}}
 </tr>
