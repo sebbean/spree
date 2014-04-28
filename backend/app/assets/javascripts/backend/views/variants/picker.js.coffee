@@ -1,8 +1,7 @@
-Backend.OrdersAddProductView = Ember.View.extend
+Backend.VariantPicker = Ember.TextField.extend
   didInsertElement: ->
     view = this
-
-    $('#add_variant_id').select2
+    $("##{this.elementId}").select2
       placeholder: Spree.translations.variant_placeholder
       minimumInputLength: 3
       ajax:
@@ -21,7 +20,12 @@ Backend.OrdersAddProductView = Ember.View.extend
         variantTemplate = Ember.TEMPLATES['variants/autocomplete.raw']
         variantTemplate(variant: variant)
       formatSelection: (variant) ->
+        view.set('variant', variant)
         if !!variant.options_text
           variant.name + " (#{variant.options_text})"
         else
           variant.name
+
+  change: (e) ->
+    content = Ember.TEMPLATES['variants/stock'](variant: this.get('variant'))
+    $('#stock_details').html(content)
