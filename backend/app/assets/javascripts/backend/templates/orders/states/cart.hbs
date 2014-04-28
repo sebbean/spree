@@ -1,7 +1,11 @@
 <fieldset class='state_info no-border-bottom' id='cart_info'>
   <legend>{{i18n 'order.states.cart' }}</legend>
 
-  {{partial 'orders/add_product' }}
+  <div data-hook="add_product_name" class="field twelve columns alpha">
+    <label for='add_variant_id'>{{i18n 'name_or_sku' }}</label><br>
+    {{view Backend.VariantPicker type="hidden" class="fullwidth"}}
+  </div>
+  <div id="stock_details"></div>
     
   <table id='line-items' class="line-items index">
     <colgroup>

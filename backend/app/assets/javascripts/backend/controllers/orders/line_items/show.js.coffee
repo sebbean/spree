@@ -21,7 +21,7 @@ Backend.OrdersLineItemsShowController = Ember.ObjectController.extend
     cancel: ->
       this.set('editing', false)
     delete: ->
-      variant_id = this.get('model.variant_id')
-      original_quantity = this.get('model.original_quantity')
       if confirm(Spree.translations.are_you_sure_delete)
-        this.get('shipment').adjustItems(variant_id, 0, original_quantity)
+        object = this.get('model')
+        object.set('quantity', 0)
+        object.update()
