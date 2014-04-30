@@ -1,4 +1,4 @@
-Backend.Order = Ember.Object.extend({})
+Backend.Order = Backend.BaseModel.extend({})
 
 Backend.Order.reopenClass
   urlRoot: Spree.pathFor('api/orders')
@@ -20,29 +20,15 @@ Backend.Order.reopenClass
 
 
 Backend.Order.reopen
+  associations: ->
+    line_items: Backend.LineItem
+    bill_address: Backend.Address
+    ship_address: Backend.Address
+    shipments: Backend.Shipment
+    payments: Backend.Payment
 
-  init: ->
-    order = this
-    associations = {
-      line_items: Backend.LineItem,
-      bill_address: Backend.Address,
-      ship_address: Backend.Address,
-      shipments: Backend.Shipment,
-      payments: Backend.Payment
-    }
-
-    for name, model of associations
-      association = this.get(name)
-      if association.constructor == Array
-        result = $.map association, (item) ->
-          item.order = order
-          model.create(item)
-      else
-        item = association
-        item.order = order
-        result = model.create(item)
-
-      this.set(name, result)
+  associate: (item) ->
+    item.set('order', this)
 
   url: (->
     this.constructor.urlRoot + "/" + this.get('number')
