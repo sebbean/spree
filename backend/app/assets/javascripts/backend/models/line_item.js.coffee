@@ -11,3 +11,11 @@ Backend.LineItem = Ember.Object.extend
     .done (data) ->
       item.setProperties(data)
       item.get('order').refresh()
+  destroy: ->
+    this.get('order').line_items.removeObject(this)
+
+    order_id = this.get('order.number')
+    item = this
+    $.ajax
+      method: 'DELETE'
+      url: Spree.pathFor("api/orders/#{order_id}/line_items/#{@id}")
