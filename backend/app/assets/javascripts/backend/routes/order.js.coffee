@@ -1,9 +1,12 @@
 Backend.OrderRoute = Ember.Route.extend
   model: (params) ->
-    this.store.find('order', params.number).then (order) ->
+    this.store.find('order', params.order_number).then (order) ->
       # TODO: This needs to be passed to the view, but I am not convinced
       # if this is the best way to do it. Therefore it's probably wrong.
       order.set('current_state', params.state || order.get('state'))
+
+  serialize: (model) ->
+    { order_number: model.get('number') }
 
   renderTemplate: ->
     @render 'orders/show'
