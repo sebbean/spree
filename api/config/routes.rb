@@ -42,6 +42,15 @@ Spree::Core::Engine.add_routes do
           put :receive
         end
       end
+
+      resources :shipments, only: [:create, :update] do
+        member do
+          put :ready
+          put :ship
+          put :add
+          put :remove
+        end
+      end
     end
 
     resources :checkouts, concerns: :order_routes do
