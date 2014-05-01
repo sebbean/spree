@@ -1,6 +1,10 @@
 <tr class="state-{{unbound state}}">
   <td class="align-center">
-    {{prettyDate completed_at}}
+    {{#if completed_at}}
+      {{prettyDate completed_at}}
+    {{else}}
+      -
+    {{/if}}
   </td>
   <td class="align-center">
     {{#link-to 'order' number}}{{number}}{{/link-to}}
