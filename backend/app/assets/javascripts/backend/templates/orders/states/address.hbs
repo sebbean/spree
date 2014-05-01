@@ -3,7 +3,7 @@
 
   {{#if canUpdate}}
     <div class="twelve columns" id='user_info'>
-      {{view Ember.Checkbox checkedBinding="controller.guestCheckout" id='guest_checkout' }}
+      {{view Ember.Checkbox checked=guestCheckout id='guest_checkout' }}
       <label for='guest_checkout'>{{i18n 'guest_checkout' }}</label>
       {{#if guestCheckout}}
         <div id='guest_checkout_fields'>
@@ -13,7 +13,7 @@
       {{else}}
         <p class='field' id='user_picker'>
           <label for='order_user_id'>{{i18n 'choose_a_customer' }}</label>
-          {{input type='hidden' id='order_user_id' class='fullwidth' value=user_id}}
+          {{view Backend.UserPicker id='order_user_id' value=user_id type="hidden" class="fullwidth" action='pickedCustomer'}}
         </p>
       {{/if}}
     </div>
@@ -22,14 +22,7 @@
     <fieldset class="no-border-bottom">
       <legend align="center">{{i18n 'order.bill_address' }}</legend>
       {{#with bill_address as address}}
-        {{#if canUpdate}}
-          {{render 'orders/addresses/form' address}}
-          <span>
-            <input type='checkbox' id='use_billing' {{bind-attr checked=useBilling}} {{action 'useBilling'}}>
-          </span>
-        {{else}}
-          {{partial 'orders/addresses/show'}}
-        {{/if}}
+        {{partial 'orders/address' useBilling='true'}}
       {{/with}}
     </fieldset>
   </div>
@@ -38,11 +31,7 @@
     <fieldset class="no-border-bottom">
       <legend align="center">{{i18n 'order.ship_address'}}</legend>
       {{#with ship_address as address}}
-        {{#if canUpdate}}
-          {{render 'orders/addresses/form' address}}
-        {{else}}
-          {{partial 'orders/addresses/show'}}
-        {{/if}}
+        {{partial 'orders/address'}}
       {{/with}}
     </fieldset>
   </div>

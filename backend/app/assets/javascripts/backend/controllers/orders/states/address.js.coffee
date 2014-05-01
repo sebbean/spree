@@ -4,19 +4,29 @@ Backend.OrdersStatesAddressController = Ember.ObjectController.extend
   guestCheckout: (->
     !@get('user_id')
   ).property('guestCheckout')
+  hasUser: (->
+    !@get('guestCheckout')
+  ).property('hasUser').volatile()
 
   actions:
-    toggleUserPicker: ->
-      this.set('guestCheckout', !this.get('guestCheckout'))
     toggleUseBilling: ->
       this.set('useBilling', !this.get('useBilling'))
+    pickedCustomer: (customer) ->
+      this.set('bill_address', Backend.Address.create(customer.bill_address))
+      this.set('ship_address', Backend.Address.create(customer.ship_address))
 
     update: ->
-      params = {
-        email: @get('email')
-        bill_address_attributes: @get('bill_address.formParams')
-        ship_address_attributes: @get('ship_address.formParams')
-      }
+      if this.get('hasUser')
+        params = {
+          user_id: @get('user_id')
+        }
+      else
+        params = {
+          email: @get('email')
+        }
+
+      params.bill_address_attributes = @get('bill_address.formParams')
+      params.ship_address_attributes = @get('ship_address.formParams')
 
       # TODO: Why does this have to be accessed through two content calls?
       # Shouldn't the model be accessible from this controller?
