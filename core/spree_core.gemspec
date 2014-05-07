@@ -38,5 +38,5 @@ Gem::Specification.new do |s|
   s.add_dependency 'stringex', '~> 1.5.1'
   s.add_dependency 'truncate_html', '0.9.2'
 
-  s.add_dependency 'font-awesome-rails', '4.0.3.2'
+  s.add_dependency 'font-awesome-rails', '~> 4.0'
 end
