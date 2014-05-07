@@ -21,9 +21,12 @@
 .fa-cancel:before,
 .fa-void:before     { @extend .fa-bars:before   }
 
+.fa-trash:before    { @extend .fa-trash-o:before }
+
 .fa-capture:before  { @extend .fa-check:before       }
 .fa-credit:before   { @extend .fa-check:before       }
 .fa-approve:before  { @extend .fa-check:before       }
+
 
 button, a {
   &.fa:before {

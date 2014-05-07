@@ -14,7 +14,7 @@ root.taxon_tree_menu = (obj, context) ->
     label: "<i class='fa fa-pencil'></i> " + Spree.translations.rename,
     action: (obj) -> context.rename(obj)
   remove:
-    label: "<i class='fa fa-trash-o'></i> " + Spree.translations.remove,
+    label: "<i class='fa fa-trash'></i> " + Spree.translations.remove,
     action: (obj) -> context.remove(obj)
   edit:
     separator_before: true,

@@ -86,7 +86,7 @@ module Spree
         name = options[:name] || Spree.t(:delete)
         options[:class] = "delete-resource"
         options[:data] = { :confirm => Spree.t(:are_you_sure), :action => 'remove' }
-        link_to_with_icon 'trash-o', name, url, options
+        link_to_with_icon 'trash', name, url, options
       end
 
       def link_to_with_icon(icon_name, text, url, options = {})
