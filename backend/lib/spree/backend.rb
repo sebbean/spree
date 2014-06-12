@@ -3,6 +3,8 @@ require 'jquery-rails'
 require 'jquery-ui-rails'
 require 'deface'
 require 'select2-rails'
+require 'momentjs-rails'
+require 'i18n-js'
 
 require 'spree_core'
 require 'spree_api'
